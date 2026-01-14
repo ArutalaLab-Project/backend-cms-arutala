@@ -9,11 +9,11 @@ export class UserController {
   ) {
     await UserService.verifyUsernameIsExisting(payload.username)
 
-    const createdDate = new Date().toISOString()
+    const roleId = await UserService.getRoleId(payload.userRole)
     const user = await UserService.addUser(
       payload,
-      userWhoCreated.user_id,
-      createdDate
+      roleId,
+      userWhoCreated.user_id
     )
 
     return {

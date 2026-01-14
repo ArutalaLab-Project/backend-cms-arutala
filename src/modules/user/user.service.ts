@@ -9,30 +9,35 @@ import * as bcrypt from 'bcrypt'
 export class UserService {
   static async addUser(
     payload: UserCreateProps,
-    userWhoCreated: string,
-    createdDate: string
+    roleId: string,
+    userWhoCreated: string
   ) {
     const passwordHash = bcrypt.hashSync(payload.password, 12)
 
-    const resRoleId = await pool.query(
-      `SELECT roles_id FROM roles WHERE roles_name = $1`,
-      [payload.userRole]
-    )
-    const roleId = resRoleId.rows[0].roles_id
-
     const { rows } = await pool.query(
-      `INSERT INTO users (users_id, username, password_hash, url_profile, users_role_id, created_by, created_date)
-                VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6) RETURNING users_id`,
+      `INSERT INTO users (
+          users_id, username, password_hash, url_profile, users_role_id, created_by, created_date)
+        VALUES (
+          gen_random_uuid(), $1, $2, $3, $4, $5, NOW()) 
+        RETURNING users_id`,
       [
         payload.username,
         passwordHash,
         payload.urlProfile,
         roleId,
         userWhoCreated,
-        createdDate,
       ]
     )
     return rows[0]
+  }
+
+  static async getRoleId(userRole: string) {
+    const { rows } = await pool.query(
+      `SELECT roles_id FROM roles WHERE roles_name = $1`,
+      [userRole]
+    )
+
+    return rows[0].roles_id
   }
 
   static async verifyUsernameIsExisting(username: string): Promise<boolean> {

@@ -21,13 +21,35 @@ export const MessageCreateModels = t.Object({
   }),
   subject: t.Array(t.String(), {
     minItems: 1,
-    error: 'Pilih minimal satu subjek',
+    error: 'Isi minimal satu subjek',
   }),
   messageBody: t.String({
     minLength: 10,
     maxLength: 2000,
-    error: 'Pesan terlalu pendek (minimal 10 karakter) atau terlalu panjang',
+    error: 'Pesan minimal 10 karakter dan maksimal 2000 karakter',
   }),
 })
 
 export type MessageCreateProps = Static<typeof MessageCreateModels>
+
+// Definisikan dalam satu konstanta/enum
+export const MessageStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  QUALIFIED: 'QUALIFIED',
+  PROPOSAL_SENT: 'PROPOSAL_SENT',
+  NEGOTIATION: 'NEGOTIATION',
+  VERBAL_COMMITMENT: 'VERBAL_COMMITMENT',
+  CLOSED_WON: 'CLOSED_WON',
+  CLOSED_LOSS: 'CLOSED_LOSS',
+  ON_HOLD: 'ON_HOLD',
+} as const
+
+// Gunakan di Model
+export const MessageUpdateModel = t.Object({
+  status: t.Enum(MessageStatus, {
+    error: 'Status tidak valid. Pastikan status sesuai dengan alur CRM.',
+  }),
+})
+
+export type MessageUpdateProps = Static<typeof MessageUpdateModel>
