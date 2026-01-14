@@ -8,7 +8,7 @@ export const SignInModel = t.Object({
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/,
     {
       error:
-        'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol',
+        'Password minimal 8 karakter dan harus mengandung huruf besar, huruf kecil, angka, serta simbol',
     }
   ),
 })
