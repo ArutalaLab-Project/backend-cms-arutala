@@ -2,7 +2,7 @@ import { Elysia } from 'elysia'
 import { MessageController } from './messages.controller'
 import { MessageCreateModels } from './messages.model'
 import { requireAuth } from '../../guards/auth.guard'
-import bearer from '@elysiajs/bearer'
+import { bearer } from '@elysiajs/bearer'
 
 export const message = new Elysia().group('/messages', (app) =>
   app
@@ -19,9 +19,7 @@ export const message = new Elysia().group('/messages', (app) =>
       }
     )
 
-    // .use(requireAuth(['ADMIN', 'SUPER_ADMIN']))
     .use(bearer())
-    // .use(jwtPlugin())
     .get(
       '/',
       async () => {

@@ -1,7 +1,7 @@
 import { BadRequest } from '../../exceptions/client.error'
 import { pool } from '../../supabase/pool'
 import { SignInProps } from './auth.model'
-import bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt'
 
 export class AuthService {
   static verifyUserCredential = async (payload: SignInProps) => {
