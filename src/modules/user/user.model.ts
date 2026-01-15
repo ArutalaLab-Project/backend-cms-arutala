@@ -1,18 +1,24 @@
 import { Static, t } from 'elysia'
 
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+} as const
+
 export const UserCreateModel = t.Object({
-  username: t.RegExp(/^[^\s]{8,}$/, {
-    error: 'Username minimal 8 karakter dan tidak boleh mengandung spasi',
-  }),
-  password: t.RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/,
-    {
+  username: t.String(
+    t.RegExp(/^[^\s]{8,}$/, {
+      error: 'Username minimal 8 karakter dan tidak boleh mengandung spasi',
+    })
+  ),
+  password: t.String(
+    t.RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/, {
       error:
         'Password harus mengandung huruf besar, huruf kecil, angka, dan simbol',
-    }
+    })
   ),
-  userRole: t.Union([t.Literal('ADMIN'), t.Literal('SUPER_ADMIN')], {
-    error: 'Role tidak valid. Pilih antara ADMIN atau SUPER_ADMIN',
+  userRole: t.Enum(UserRole, {
+    error: 'Role User tidak valid',
   }),
   urlProfile: t.Optional(
     t.String({

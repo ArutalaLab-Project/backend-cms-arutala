@@ -3,8 +3,25 @@ import { message } from './modules/message/message.route'
 import { auth } from './modules/auth/auth.route'
 import { HttpError } from './exceptions/Error'
 import { user } from './modules/user/user.route'
+import swagger from '@elysiajs/swagger'
+import cors from '@elysiajs/cors'
+import { mentor } from './modules/mentor/mentor.route'
 
 const App = new Elysia()
+  .use(cors())
+  .use(
+    swagger({
+      documentation: {
+        tags: [
+          { name: 'Auth', description: 'Authentication Endpoint' },
+          { name: 'Message', description: 'Message Endpoint' },
+          { name: 'User', description: 'User Endpoint' },
+        ],
+      },
+    })
+  )
+
+  // Global Mapping Error
   .onError(({ error, code, set }) => {
     if (error instanceof HttpError) {
       set.status = error.status
@@ -44,13 +61,15 @@ const App = new Elysia()
     return {
       status: 'fail',
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'Unexpected error',
+      message: error.message,
     }
   })
 
+  // Route Endpoint
   .get('/', () => 'The King is Back')
   .use(auth)
   .use(message)
   .use(user)
+  .use(mentor)
 
 export default App

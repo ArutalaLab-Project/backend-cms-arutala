@@ -16,6 +16,9 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
+        detail: {
+          tags: ['Message'],
+        },
         body: MessageCreateModels,
       }
     )
