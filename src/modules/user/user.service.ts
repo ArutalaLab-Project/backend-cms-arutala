@@ -2,7 +2,7 @@ import {
   BadRequest,
   ResourceNotFoundError,
 } from '../../exceptions/client.error'
-import { pool } from '../../supabase/pool'
+import { supabasePool } from '../../supabase/supabasePool'
 import { UserCreateProps } from './user.model'
 import * as bcrypt from 'bcrypt'
 
@@ -14,7 +14,7 @@ export class UserService {
   ) {
     const passwordHash = bcrypt.hashSync(payload.password, 12)
 
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `INSERT INTO users (
           users_id, username, password_hash, url_profile, users_role_id, created_by, created_date)
         VALUES (
@@ -32,7 +32,7 @@ export class UserService {
   }
 
   static async getRoleId(userRole: string) {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `SELECT roles_id FROM roles WHERE roles_name = $1`,
       [userRole]
     )
@@ -41,7 +41,7 @@ export class UserService {
   }
 
   static async verifyUsernameIsExisting(username: string): Promise<boolean> {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `SELECT username FROM users WHERE username = $1`,
       [username]
     )
@@ -54,7 +54,7 @@ export class UserService {
   }
 
   static async getUsers() {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `SELECT 
                 u.users_id,
                 u.username,
@@ -72,7 +72,7 @@ export class UserService {
   static async getUserById(userId: string) {
     let result
     try {
-      result = await pool.query(
+      result = await supabasePool.query(
         `SELECT users_id FROM users WHERE users_id = $1 AND is_deleted = false`,
         [userId]
       )
@@ -88,7 +88,7 @@ export class UserService {
   }
 
   static async deleteUserById(userId: string) {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `UPDATE users SET is_deleted = true WHERE users_id = $1 RETURNING users_id`,
       [userId]
     )

@@ -1,11 +1,11 @@
 import { BadRequest } from '../../exceptions/client.error'
-import { pool } from '../../supabase/pool'
+import { supabasePool } from '../../supabase/supabasePool'
 import { SignInProps } from './auth.model'
 import * as bcrypt from 'bcrypt'
 
 export class AuthService {
   static verifyUserCredential = async (payload: SignInProps) => {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `SELECT u.users_id, u.password_hash, r.roles_name FROM users u
                 JOIN roles r ON u.users_role_id = r.roles_id
                 WHERE username = $1 `,
@@ -27,11 +27,11 @@ export class AuthService {
   }
 
   static saveRefreshToken = async (token: string) => {
-    await pool.query(`INSERT INTO authentications VALUES ($1)`, [token])
+    await supabasePool.query(`INSERT INTO authentications VALUES ($1)`, [token])
   }
 
   static verifyRefreshTokenExist = async (token: string) => {
-    const { rows } = await pool.query(
+    const { rows } = await supabasePool.query(
       `SELECT refresh_token FROM authentications WHERE refresh_token = $1`,
       [token]
     )
@@ -42,8 +42,9 @@ export class AuthService {
   }
 
   static deleteRefreshToken = async (token: string) => {
-    await pool.query(`DELETE from authentications WHERE refresh_token = $1`, [
-      token,
-    ])
+    await supabasePool.query(
+      `DELETE from authentications WHERE refresh_token = $1`,
+      [token]
+    )
   }
 }
