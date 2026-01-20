@@ -6,6 +6,7 @@ import { user } from './modules/user/user.route'
 import swagger from '@elysiajs/swagger'
 import { cors } from '@elysiajs/cors'
 import { mentor } from './modules/mentor/mentor.route'
+import { mitra } from './modules/mitra/mitra.route'
 
 const App = new Elysia()
   .use(cors())
@@ -21,6 +22,7 @@ const App = new Elysia()
           { name: 'User', description: 'User Endpoint' },
           { name: 'Message', description: 'Message Endpoint' },
           { name: 'Mentor', description: 'Mentor Endpoint' },
+          { name: 'Mitra', description: 'Mitra Endpoint' },
         ],
       },
     })
@@ -76,5 +78,6 @@ const App = new Elysia()
   .use(user)
   .use(message)
   .use(mentor)
+  .use(mitra)
 
 export default App

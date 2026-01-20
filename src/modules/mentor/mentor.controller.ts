@@ -52,8 +52,8 @@ export class MentorController {
 
   static async deleteMentorController(mentorId: string): Promise<ApiResponse> {
     await MentorService.getMentorById(mentorId)
-    const { mentors_name } = await MentorService.deleteMentor(mentorId)
+    const { mentor_name } = await MentorService.deleteMentor(mentorId)
 
-    return ResponseHelper.success(`Menghapus mentor: ${mentors_name} berhasil`)
+    return ResponseHelper.success(`Menghapus mentor: ${mentor_name} berhasil`)
   }
 }
