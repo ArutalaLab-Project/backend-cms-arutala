@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia'
 import { MessageController } from './message.controller'
-import { MessageCreateModels, MessageUpdateModel } from './message.model'
+import { MessageCreateModel, MessageUpdateModel } from './message.model'
 import { requireAuth } from '../../guards/auth.guard'
 import { bearer } from '@elysiajs/bearer'
 import { assertAuth } from '../../utils/assertAuth'
@@ -16,7 +16,7 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
-        body: MessageCreateModels,
+        body: MessageCreateModel,
         detail: {
           tags: ['Message'],
           summary: 'Create a New Message',

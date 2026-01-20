@@ -18,11 +18,22 @@ export const MentorCreateModel = t.Object({
     maxLength: 50,
     error: 'Nama perusahaan harus diisi (2-50 karakter)',
   }),
-  expertise: t.Array(t.String(), {
-    minItems: 1,
-    maxItems: 10,
-    error: 'Pilih minimal 1 dan maksimal 10 keahlian',
-  }),
+  expertise: t
+    .Transform(
+      t.Union([
+        t.String({ error: 'Isi minimal 1 keahlian' }), // Terima string (1 nilai)
+        t.Array(t.String(), {
+          minItems: 1,
+          error: 'Isi minimal 1 keahlian',
+        }),
+      ])
+    )
+    .Decode((value) => {
+      // Normalize: selalu jadikan array
+      return Array.isArray(value) ? value : [value]
+    })
+    .Encode((value) => value), // Encode tetap array
+
   profile: t.File({
     type: ['image/jpeg', 'image/png', 'image/webp'],
     maxSize: '5m', // Batasi maksimal 2MB
@@ -58,11 +69,21 @@ export const MentorUpdateModel = t.Object({
     })
   ),
   expertise: t.Optional(
-    t.Array(t.String(), {
-      minItems: 1,
-      maxItems: 10,
-      error: 'Pilih minimal 1 dan maksimal 10 keahlian',
-    })
+    t
+      .Transform(
+        t.Union([
+          t.String({ error: 'Isi minimal 1 keahlian' }), // Terima string (1 nilai)
+          t.Array(t.String(), {
+            minItems: 1,
+            error: 'Isi minimal 1 keahlian',
+          }),
+        ])
+      )
+      .Decode((value) => {
+        // Normalize: selalu jadikan array
+        return Array.isArray(value) ? value : [value]
+      })
+      .Encode((value) => value) // Encode tetap array
   ),
   profile: t.Optional(
     t.File({

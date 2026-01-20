@@ -1,6 +1,6 @@
 import { Static, t } from 'elysia'
 
-export const MessageCreateModels = t.Object({
+export const MessageCreateModel = t.Object({
   senderName: t.String({
     minLength: 3,
     maxLength: 50,
@@ -30,7 +30,7 @@ export const MessageCreateModels = t.Object({
   }),
 })
 
-export type MessageCreateProps = Static<typeof MessageCreateModels>
+export type MessageCreateProps = Static<typeof MessageCreateModel>
 
 // Definisikan dalam satu konstanta/enum
 export const MessageStatus = {
