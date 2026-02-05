@@ -37,6 +37,16 @@ export class AuthController {
     })
   }
 
+  // static async getWhoIsAuthenticatedController(
+  //   token: string | undefined,
+  //   accessToken: {
+  //     verify: (payload: AccessTokenPayload) => Promise<string>
+  //   }
+  // ) : Promise<ApiResponse> {
+  //   const decoded = await accessToken.verify(token)
+  //   return ResponseHelper.success('Mengambil data yang terautentikasi')
+  // }
+
   static async refreshController(
     token: string | undefined,
     accessToken: {

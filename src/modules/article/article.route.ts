@@ -54,7 +54,6 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
-        beforeHandle: requireAuth('READ_ARTICLE'),
         detail: {
           tags: ['Article'],
           summary: 'Get All Article',
@@ -69,7 +68,6 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
-        beforeHandle: requireAuth('READ_ARTICLE'),
         params: ParamsArticleModel,
         detail: {
           tags: ['Article'],
