@@ -40,6 +40,24 @@ export const auth = (app: Elysia) =>
           },
         }
       )
+      // .get(
+      //   '/me',
+      //   async ({ cookie, accessToken }) => {
+      //     const token = cookie.refresh_token.value
+
+      //     const res = AuthController.getWhoIsAuthenticatedController(
+      //       token,
+      //       accessToken
+      //     )
+      //     return res
+      //   },
+      //   {
+      //     detail: {
+      //       tags: ['Auth'],
+      //       summary: 'Get Detail Information Who Authenticated',
+      //     },
+      //   }
+      // )
 
       .put(
         '/refresh',
