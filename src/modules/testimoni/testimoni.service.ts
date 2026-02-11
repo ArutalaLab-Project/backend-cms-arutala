@@ -50,7 +50,7 @@ export class TestimoniService {
       `SELECT 
         testimoni_id, author_name, 
         author_job_title, author_company_name, 
-        author_profile_url, testimoni_content, testimony_category
+        author_profile_url, testimoni_content, testimoni_category
       FROM testimonies
       WHERE ${conditions.join(' AND ')}`,
       values
@@ -72,7 +72,7 @@ export class TestimoniService {
     const { rows } = await supabasePool.query(
       `SELECT 
         testimoni_id, author_name, author_job_title, author_company_name, 
-        author_profile_url, testimoni_content, testimony_category
+        author_profile_url, testimoni_content, testimoni_category
       FROM testimonies WHERE testimoni_id = $1`,
       [testimoniId]
     )
