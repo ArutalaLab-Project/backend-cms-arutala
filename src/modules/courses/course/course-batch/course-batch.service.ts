@@ -177,7 +177,7 @@ export class CourseBatchService {
       LEFT JOIN course_sessions cs
         ON cb.course_batch_id = cs.course_session_batch_id
 
-      WHERE cb.course_batch_course_id = $1
+      WHERE cb.course_batch_course_id = $1 AND cb.is_deleted = FALSE
 
       GROUP BY
         cb.course_batch_id,
