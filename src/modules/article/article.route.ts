@@ -5,6 +5,7 @@ import {
   ArticleCoverModel,
   ArticleModel,
   ArticleUpdateModel,
+  ContentImageUploadModel,
   ParamsArticleModel,
   QueryArticleStatusModel,
 } from './article.model'
@@ -79,6 +80,22 @@ export const article = new Elysia().group('/article', (app) =>
         detail: {
           tags: ['Article'],
           summary: 'Update Article by Id',
+        },
+      }
+    )
+
+    .post(
+      '/upload',
+      async ({ body }) => {
+        const res = await ArticleController.uploadContentImageController(body)
+        return res
+      },
+      {
+        beforeHandle: requireAuth('CREATE_COURSE'),
+        body: ContentImageUploadModel,
+        detail: {
+          tags: ['Article'],
+          summary: 'Upload konten image pada Article',
         },
       }
     )

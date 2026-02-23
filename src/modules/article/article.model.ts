@@ -24,10 +24,12 @@ export const ArticleStatus = {
 } as const
 
 export const ArticleUpdateModel = t.Object({
-  title: t.String({
-    minLength: 10,
-    error: 'Judul harus merupakan string dan memiliki minimal 10 karakter',
-  }),
+  title: t.Optional(
+    t.String({
+      minLength: 10,
+      error: 'Judul harus merupakan string dan memiliki minimal 10 karakter',
+    })
+  ),
   contentBlocks: t.Optional(t.Array(t.Any())),
   status: t.Optional(
     t.Enum(ArticleStatus, {
@@ -79,3 +81,13 @@ export const QueryArticleStatusModel = t.Object({
   ),
 })
 export type QueryArticleStatusProps = Static<typeof QueryArticleStatusModel>
+
+// Upload Gambar
+export const ContentImageUploadModel = t.Object({
+  contentImage: t.File({
+    type: ['image/jpeg', 'image/png', 'image/webp'],
+    maxSize: '5m',
+    error: 'Poster harus berupa JPG, PNG, atau WEBP dengan ukuran maksimal 5MB',
+  }),
+})
+export type ContentImageUploadProps = Static<typeof ContentImageUploadModel>
