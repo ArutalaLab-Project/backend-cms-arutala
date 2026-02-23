@@ -9,6 +9,7 @@ import {
   ArticleCoverProps,
   ArticleProps,
   ArticleUpdateProps,
+  ContentImageUploadProps,
   ParamsArticleProps,
   QueryArticleStatusProps,
 } from './article.model'
@@ -114,6 +115,13 @@ export class ArticleController {
     return ResponseHelper.success(
       `Menghapus article : '${article_title}' berhasil`
     )
+  }
+
+  static async uploadContentImageController(
+    payload: ContentImageUploadProps
+  ): Promise<ApiResponse> {
+    const coverUrl = await upload(payload.contentImage, '/article/content')
+    return ResponseHelper.created('Upload konten gambar berhasil', coverUrl)
   }
 
   static async addCoverArticleController(
