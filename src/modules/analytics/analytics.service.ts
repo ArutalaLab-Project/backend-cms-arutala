@@ -8,6 +8,7 @@ export class AnalyticsService {
         message_id,
         sender_name,
         sender_email,
+        sender_phone,
         subject,
         created_date AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta' AS created_date
       FROM messages
