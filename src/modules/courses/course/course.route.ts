@@ -1,13 +1,16 @@
 import { bearer } from '@elysiajs/bearer'
-import { Elysia, t } from 'elysia'
+import { Elysia } from 'elysia'
 import { assertAuth } from '../../../utils/assertAuth'
 import { requireAuth } from '../../../guards/auth.guard'
 import { CourseController } from './course.controller'
 import {
-  CourseModel,
-  ParamsCourseModel,
-  QueryCourseModel,
-} from './course.model'
+  AddCourseDoc,
+  DeleteCourseDoc,
+  GetAllCourseDoc,
+  GetCourseByIdDoc,
+  GetUpcomingCourseDoc,
+  UpdateCourseDoc,
+} from './course.doc'
 
 export const course = new Elysia()
   .use(bearer())
@@ -22,12 +25,8 @@ export const course = new Elysia()
       return res
     },
     {
+      ...AddCourseDoc,
       beforeHandle: requireAuth('CREATE_COURSE'),
-      body: CourseModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Create a New Course',
-      },
     }
   )
   .get(
@@ -36,13 +35,7 @@ export const course = new Elysia()
       const res = await CourseController.getAllCourseController(query)
       return res
     },
-    {
-      query: QueryCourseModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Get All Course with Query Parameter (optional)',
-      },
-    }
+    GetAllCourseDoc
   )
   .get(
     '/upcoming-course',
@@ -50,12 +43,7 @@ export const course = new Elysia()
       const res = await CourseController.getUpcomingCourseController()
       return res
     },
-    {
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Get Upcoming Course (1 category 1 course)',
-      },
-    }
+    GetUpcomingCourseDoc
   )
   .get(
     '/:courseId',
@@ -63,14 +51,7 @@ export const course = new Elysia()
       const res = await CourseController.getCourseByIdController(params)
       return res
     },
-    {
-      // beforeHandle: requireAuth('READ_COURSE'),
-      params: ParamsCourseModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Get course By Id',
-      },
-    }
+    GetCourseByIdDoc
   )
 
   .patch(
@@ -84,13 +65,8 @@ export const course = new Elysia()
       return res
     },
     {
+      ...UpdateCourseDoc,
       beforeHandle: requireAuth('UPDATE_COURSE'),
-      params: ParamsCourseModel,
-      body: t.Partial(CourseModel),
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Update Course by Id',
-      },
     }
   )
 
@@ -101,11 +77,7 @@ export const course = new Elysia()
       return res
     },
     {
+      ...DeleteCourseDoc,
       beforeHandle: requireAuth('DELETE_COURSE'),
-      params: ParamsCourseModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course] Delete Course by Id',
-      },
     }
   )

@@ -52,15 +52,20 @@ export class ArticleService {
     const { status } = query
 
     if (status) {
-      conditions.push(`a.article_status =  $${idx}`)
+      conditions.push(`a.article_status =  $${idx++}`)
       values.push(status.toUpperCase())
+    }
+
+    if (query.isDisplayed !== undefined) {
+      conditions.push(`a.is_displayed = $${idx++}`)
+      values.push(query.isDisplayed === 'true')
     }
     const { rows } = await supabasePool.query(
       `SELECT 
         a.article_id, a.article_title, 
         a.article_content_text, a.article_content_blocks, 
         a.article_cover_url, a.article_cover_description,
-        a.article_status, a.created_date, u.full_name as author
+        a.article_status, a.is_displayed, a.created_date, u.full_name as author
       FROM articles a  JOIN users u ON a.created_by = u.user_id
       WHERE ${conditions.join(' AND ')}`,
       values
@@ -84,7 +89,7 @@ export class ArticleService {
         a.article_id, a.article_title, 
         a.article_cover_url, a.article_cover_description, 
         a.article_content_blocks, a.article_content_text, 
-        a.article_status, a.created_date, u.full_name as author
+        a.article_status, a.is_displayed, a.created_date, u.full_name as author
       FROM articles a  JOIN users u ON a.created_by = u.user_id
       WHERE a.article_id = $1 AND a.is_deleted = FALSE`,
       [articleId]
@@ -124,6 +129,11 @@ export class ArticleService {
     if (payload.status) {
       fields.push(`article_status = $${idx++}`)
       values.push(payload.status)
+    }
+
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)

@@ -98,6 +98,11 @@ export class CourseService {
     `)
     }
 
+    if (query.isDisplayed !== undefined) {
+      values.push(query.isDisplayed === 'true')
+      conditions.push(`c.is_displayed = $${values.length}`)
+    }
+
     const whereClause = conditions.length
       ? `AND ${conditions.join(' AND ')}`
       : ''
@@ -108,6 +113,7 @@ export class CourseService {
         c.course_id,
         c.course_title,
         c.course_description,
+        c.is_displayed,
         cc.course_category_name,
         cf.course_field_name,
 
@@ -209,6 +215,7 @@ export class CourseService {
         c.course_id,
         c.course_title,
         c.course_description,
+        c.is_displayed,
         cc.course_category_name,
         cf.course_field_name
       FROM courses c
@@ -247,6 +254,10 @@ export class CourseService {
     if (payload.courseFieldId) {
       fields.push(`field_id = $${idx++}`)
       values.push(payload.courseFieldId)
+    }
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)

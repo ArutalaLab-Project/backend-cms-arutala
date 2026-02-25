@@ -1,9 +1,15 @@
 import bearer from '@elysiajs/bearer'
-import Elysia, { t } from 'elysia'
+import Elysia from 'elysia'
 import { MitraController } from './mitra.controller'
 import { requireAuth } from '../../guards/auth.guard'
 import { assertAuth } from '../../utils/assertAuth'
-import { MitraModel, ParamsMitraModel } from './mitra.model'
+import {
+  AddMitraDoc,
+  DeleteMitraDoc,
+  GetAllMitraDoc,
+  GetMitraByIdDoc,
+  UpdateMitraDoc,
+} from './mitra.doc'
 
 export const mitra = new Elysia().group('/mitras', (app) =>
   app
@@ -19,26 +25,17 @@ export const mitra = new Elysia().group('/mitras', (app) =>
         return res
       },
       {
+        ...AddMitraDoc,
         beforeHandle: requireAuth('CREATE_MITRA'),
-        body: MitraModel,
-        detail: {
-          tags: ['Mitra'],
-          summary: 'Create a New Mitra',
-        },
       }
     )
     .get(
       '/',
-      async () => {
-        const res = await MitraController.getAllMitraController()
+      async ({ query }) => {
+        const res = await MitraController.getAllMitraController(query)
         return res
       },
-      {
-        detail: {
-          tags: ['Mitra'],
-          summary: 'Get All Mitra',
-        },
-      }
+      GetAllMitraDoc
     )
 
     .get(
@@ -48,12 +45,8 @@ export const mitra = new Elysia().group('/mitras', (app) =>
         return res
       },
       {
+        ...GetMitraByIdDoc,
         beforeHandle: requireAuth('READ_MITRA'),
-        params: ParamsMitraModel,
-        detail: {
-          tags: ['Mitra'],
-          summary: 'get Mitra By Id',
-        },
       }
     )
     .patch(
@@ -67,13 +60,8 @@ export const mitra = new Elysia().group('/mitras', (app) =>
         return res
       },
       {
+        ...UpdateMitraDoc,
         beforeHandle: requireAuth('UPDATE_MITRA'),
-        body: t.Partial(MitraModel),
-        params: ParamsMitraModel,
-        detail: {
-          tags: ['Mitra'],
-          summary: 'Update Mitra by Id',
-        },
       }
     )
     .delete(
@@ -83,11 +71,8 @@ export const mitra = new Elysia().group('/mitras', (app) =>
         return res
       },
       {
+        ...DeleteMitraDoc,
         beforeHandle: requireAuth('DELETE_MITRA'),
-        detail: {
-          tags: ['Mitra'],
-          summary: 'Delete Mitra by Id',
-        },
       }
     )
 )

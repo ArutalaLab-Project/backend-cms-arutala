@@ -50,6 +50,7 @@ export const ContributorModel = t.Object({
     error:
       'Contributor Type tidak valid. Pastikan nilai merupakan INTERNAL untuk Mentor dan EXTERNAL untuk bukan Mentor',
   }),
+  isDisplayed: t.Optional(t.Boolean()),
 })
 export type ContributorProps = Static<typeof ContributorModel>
 
@@ -58,6 +59,12 @@ export const QueryContributorTypeModel = t.Object({
   type: t.Optional(
     t.Union([t.Literal('internal'), t.Literal('external')], {
       error: "Query 'type' harus bernilai 'internal' atau 'external'",
+    })
+  ),
+  isDisplayed: t.Optional(
+    t.String({
+      pattern: '^(true|false)$',
+      error: 'isDisplayed harus string "true" atau "false"',
     })
   ),
 })

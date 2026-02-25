@@ -96,6 +96,7 @@ export class ArticleController {
       articleId,
       {
         status: payload.status,
+        isDisplayed: payload.isDisplayed,
         ...derivedData,
       },
       user.user_id
@@ -112,6 +113,7 @@ export class ArticleController {
     const { articleId } = params
     await ArticleService.verifyArticleIsExist(articleId)
     const { article_title } = await ArticleService.deleteArticle(articleId)
+    await PageService.deletePage(articleId)
     return ResponseHelper.success(
       `Menghapus article : '${article_title}' berhasil`
     )

@@ -1,13 +1,15 @@
 import bearer from '@elysiajs/bearer'
-import Elysia, { t } from 'elysia'
+import Elysia from 'elysia'
 import { assertAuth } from '../../utils/assertAuth'
 import { TestimoniController } from './testimoni.controller'
 import { requireAuth } from '../../guards/auth.guard'
 import {
-  ParamsTestimoniModel,
-  QueryTestimoniModel,
-  TestimoniModel,
-} from './testimoni.model'
+  AddTestimoniDoc,
+  DeleteTestimoniDoc,
+  GetAllTestimoniDoc,
+  GetTestimoniByIdDoc,
+  UpdateTestimoniDoc,
+} from './testimoni.doc'
 
 export const testimoni = new Elysia().group('/testimonies', (app) =>
   app
@@ -23,12 +25,8 @@ export const testimoni = new Elysia().group('/testimonies', (app) =>
         return res
       },
       {
+        ...AddTestimoniDoc,
         beforeHandle: requireAuth('CREATE_TESTIMONI'),
-        body: TestimoniModel,
-        detail: {
-          tags: ['Testimoni'],
-          summary: 'Create a New Testimoni',
-        },
       }
     )
     .get(
@@ -37,13 +35,7 @@ export const testimoni = new Elysia().group('/testimonies', (app) =>
         const res = await TestimoniController.getAllTestimoniController(query)
         return res
       },
-      {
-        query: QueryTestimoniModel,
-        detail: {
-          tags: ['Testimoni'],
-          summary: 'Get All Testimoni with Query Parameter',
-        },
-      }
+      GetAllTestimoniDoc
     )
 
     .get(
@@ -53,12 +45,8 @@ export const testimoni = new Elysia().group('/testimonies', (app) =>
         return res
       },
       {
+        ...GetTestimoniByIdDoc,
         beforeHandle: requireAuth('READ_TESTIMONI'),
-        params: ParamsTestimoniModel,
-        detail: {
-          tags: ['Testimoni'],
-          summary: 'Get Testimoni by Id',
-        },
       }
     )
 
@@ -73,13 +61,8 @@ export const testimoni = new Elysia().group('/testimonies', (app) =>
         return res
       },
       {
+        ...UpdateTestimoniDoc,
         beforeHandle: requireAuth('UPDATE_TESTIMONI'),
-        body: t.Partial(TestimoniModel),
-        params: ParamsTestimoniModel,
-        detail: {
-          tags: ['Testimoni'],
-          summary: 'Update Testimoni by Id',
-        },
       }
     )
     .delete(
@@ -89,12 +72,8 @@ export const testimoni = new Elysia().group('/testimonies', (app) =>
         return res
       },
       {
+        ...DeleteTestimoniDoc,
         beforeHandle: requireAuth('DELETE_TESTIMONI'),
-        params: ParamsTestimoniModel,
-        detail: {
-          tags: ['Testimoni'],
-          summary: 'Delete Testimoni by Id',
-        },
       }
     )
 )

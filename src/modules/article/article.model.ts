@@ -37,6 +37,7 @@ export const ArticleUpdateModel = t.Object({
         'Status tidak valid. Pilih antara DRAFT, REVIEW, PUBLISHED atau UNPUBLISHED',
     })
   ),
+  isDisplayed: t.Optional(t.Boolean()),
 })
 export type ArticleUpdateProps = Static<typeof ArticleUpdateModel>
 
@@ -69,6 +70,7 @@ export type UpdateArticleServiceProps = {
   contentText?: string
   contentBlocks?: any[]
   status?: string
+  isDisplayed?: boolean
 }
 
 // Model Query Status Artivle
@@ -77,6 +79,12 @@ export const QueryArticleStatusModel = t.Object({
     t.Enum(ArticleStatus, {
       error:
         'Status tidak valid. Pilih antara DRAFT, REVIEW, PUBLISHED atau UNPUBLISHED',
+    })
+  ),
+  isDisplayed: t.Optional(
+    t.String({
+      pattern: '^(true|false)$',
+      error: 'isDisplayed harus string "true" atau "false"',
     })
   ),
 })

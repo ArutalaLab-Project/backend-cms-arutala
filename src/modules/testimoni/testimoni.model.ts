@@ -37,6 +37,7 @@ export const TestimoniModel = t.Object({
   testimoniCategory: t.Enum(TestimoniCategory, {
     error: 'Category tidak valid',
   }),
+  isDisplayed: t.Optional(t.Boolean()),
 })
 export type TestimoniProps = Static<typeof TestimoniModel>
 
@@ -45,6 +46,12 @@ export const QueryTestimoniModel = t.Object({
   category: t.Optional(
     t.Union([t.Literal('siswa'), t.Literal('talent')], {
       error: "Query 'category' harus bernilai 'siswa' atau 'talent'",
+    })
+  ),
+  isDisplayed: t.Optional(
+    t.String({
+      pattern: '^(true|false)$',
+      error: 'isDisplayed harus string "true" atau "false"',
     })
   ),
 })

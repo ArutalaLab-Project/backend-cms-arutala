@@ -20,13 +20,22 @@ export class MitraService {
     return rows[0]
   }
 
-  static async getAllMitra() {
+  static async getAllMitra(query?: { isDisplayed?: string }) {
+    const values: any[] = []
+    const conditions: string[] = ['is_deleted = FALSE']
+
+    if (query?.isDisplayed !== undefined) {
+      values.push(query.isDisplayed === 'true')
+      conditions.push(`is_displayed = $${values.length}`)
+    }
+
     const { rows } = await supabasePool.query(
       `SELECT 
-        mitra_id, mitra_name, business_field, mitra_logo_url 
+        mitra_id, mitra_name, business_field, mitra_logo_url, is_displayed 
       FROM mitras 
-      WHERE is_deleted = FALSE 
-      ORDER BY mitra_name ASC`
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY mitra_name ASC`,
+      values
     )
     return rows
   }
@@ -45,7 +54,7 @@ export class MitraService {
   static async getMitraById(mitraId: string) {
     const { rows } = await supabasePool.query(
       `SELECT 
-        mitra_id, mitra_name, business_field, mitra_logo_url 
+        mitra_id, mitra_name, business_field, mitra_logo_url, is_displayed 
       FROM mitras WHERE mitra_id = $1 AND is_deleted = FALSE`,
       [mitraId]
     )
@@ -75,6 +84,11 @@ export class MitraService {
     if (logoUrl) {
       fields.push(`mitra_logo_url = $${idx++}`)
       values.push(logoUrl)
+    }
+
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)

@@ -30,6 +30,7 @@ export const MitraModel = t.Object({
     error:
       'File harus berupa gambar (JPG, PNG, WEBP) dengan ukuran maksimal 5MB',
   }),
+  isDisplayed: t.Optional(t.Boolean()),
 })
 export type MitraProps = Static<typeof MitraModel>
 
@@ -41,3 +42,13 @@ export const ParamsMitraModel = t.Object({
   }),
 })
 export type ParamsMitraProps = Static<typeof ParamsMitraModel>
+
+export const QueryMitraModel = t.Object({
+  isDisplayed: t.Optional(
+    t.String({
+      pattern: '^(true|false)$',
+      error: 'isDisplayed harus string "true" atau "false"',
+    })
+  ),
+})
+export type QueryMitraProps = Static<typeof QueryMitraModel>

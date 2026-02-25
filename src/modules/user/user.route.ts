@@ -3,7 +3,12 @@ import { Elysia } from 'elysia'
 import { requireAuth } from '../../guards/auth.guard'
 import { assertAuth } from '../../utils/assertAuth'
 import { UserController } from './user.controller'
-import { ParamsUserModel, UserModel } from './user.model'
+import {
+  AddUserDoc,
+  DeleteUserDoc,
+  GetAllUserDoc,
+  GetUserByIdDoc,
+} from './user.doc'
 
 export const user = new Elysia().group('/users', (app) =>
   app
@@ -19,12 +24,8 @@ export const user = new Elysia().group('/users', (app) =>
         return res
       },
       {
-        body: UserModel,
+        ...AddUserDoc,
         beforeHandle: requireAuth('CREATE_USER'),
-        detail: {
-          tags: ['User'],
-          summary: 'Create a New User',
-        },
       }
     )
 
@@ -35,11 +36,8 @@ export const user = new Elysia().group('/users', (app) =>
         return res
       },
       {
+        ...GetAllUserDoc,
         beforeHandle: requireAuth('READ_USER'),
-        detail: {
-          tags: ['User'],
-          summary: 'Get All Users',
-        },
       }
     )
 
@@ -50,12 +48,8 @@ export const user = new Elysia().group('/users', (app) =>
         return res
       },
       {
+        ...GetUserByIdDoc,
         beforeHandle: requireAuth('READ_USER'),
-        params: ParamsUserModel,
-        detail: {
-          tags: ['User'],
-          summary: 'Get User by Id',
-        },
       }
     )
 
@@ -66,12 +60,8 @@ export const user = new Elysia().group('/users', (app) =>
         return res
       },
       {
+        ...DeleteUserDoc,
         beforeHandle: requireAuth('DELETE_USER'),
-        params: ParamsUserModel,
-        detail: {
-          tags: ['User'],
-          summary: 'Delete User by Id',
-        },
       }
     )
 )

@@ -46,10 +46,15 @@ export class ContributorService {
       values.push(type.toUpperCase())
     }
 
+    if (query.isDisplayed !== undefined) {
+      conditions.push(`is_displayed = $${idx++}`)
+      values.push(query.isDisplayed === 'true')
+    }
+
     const { rows } = await supabasePool.query(
       `SELECT 
         contributor_id, contributor_name, contributor_job_title, contributor_type,
-        contributor_company_name, contributor_expertise, contributor_profile_url 
+        contributor_company_name, contributor_expertise, contributor_profile_url, is_displayed 
       FROM contributors 
       WHERE ${conditions.join(' AND ')}`,
       values
@@ -71,7 +76,7 @@ export class ContributorService {
     const { rows } = await supabasePool.query(
       `SELECT 
         contributor_id, contributor_name, contributor_job_title, contributor_type,
-        contributor_company_name, contributor_expertise, contributor_profile_url 
+        contributor_company_name, contributor_expertise, contributor_profile_url, is_displayed 
       FROM contributors
       WHERE contributor_id = $1 AND is_deleted = FALSE`,
       [contributorId]
@@ -117,6 +122,11 @@ export class ContributorService {
     if (payload.contributorType) {
       fields.push(`contributor_type = $${idx++}`)
       values.push(payload.contributorType)
+    }
+
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)
