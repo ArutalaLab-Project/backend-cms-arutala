@@ -96,7 +96,6 @@ export class ArticleController {
       articleId,
       {
         status: payload.status,
-        isDisplayed: payload.isDisplayed,
         ...derivedData,
       },
       user.user_id
