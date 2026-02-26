@@ -2,7 +2,7 @@ import { upload } from '../../shared/services/upload'
 import { AuthUser } from '../../types/auth.type'
 import { ApiResponse } from '../../types/response.type'
 import { ResponseHelper } from '../../utils/responseHelper'
-import { MitraProps, ParamsMitraProps } from './mitra.model'
+import { MitraProps, ParamsMitraProps, QueryMitraProps } from './mitra.model'
 import { MitraService } from './mitra.service'
 
 export class MitraController {
@@ -15,8 +15,10 @@ export class MitraController {
     return ResponseHelper.created('Menambah mitra berhasil', mitraId)
   }
 
-  static async getAllMitraController(): Promise<ApiResponse> {
-    const mitras = await MitraService.getAllMitra()
+  static async getAllMitraController(
+    query: QueryMitraProps
+  ): Promise<ApiResponse> {
+    const mitras = await MitraService.getAllMitra(query)
     return ResponseHelper.success(
       'Mengambil seluruh data mitra berhasil',
       mitras

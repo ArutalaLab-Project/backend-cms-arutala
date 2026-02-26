@@ -1,10 +1,10 @@
 import { Elysia } from 'elysia'
 import { AuthController } from './auth.controller'
-import { RefreshTokenModel, SignInModel } from './auth.model'
 import { jwtPlugin } from '../../plugins/jwt/jwt.plugin'
 import { assertAuth } from '../../utils/assertAuth'
 import bearer from '@elysiajs/bearer'
 import { requireAuth } from '../../guards/auth.guard'
+import { GetMeDoc, RefreshDoc, SignInDoc, SignOutDoc } from './auth.doc'
 
 export const auth = (app: Elysia) =>
   app.group('/auth', (app) =>
@@ -20,13 +20,7 @@ export const auth = (app: Elysia) =>
           )
           return res
         },
-        {
-          body: SignInModel,
-          detail: {
-            tags: ['Auth'],
-            summary: 'Sign In',
-          },
-        }
+        SignInDoc
       )
 
       .put(
@@ -39,13 +33,7 @@ export const auth = (app: Elysia) =>
           )
           return res
         },
-        {
-          body: RefreshTokenModel,
-          detail: {
-            tags: ['Auth'],
-            summary: 'Refresh Access Token',
-          },
-        }
+        RefreshDoc
       )
       .delete(
         '/sign-out',
@@ -53,13 +41,7 @@ export const auth = (app: Elysia) =>
           const res = await AuthController.signOutController(body)
           return res
         },
-        {
-          body: RefreshTokenModel,
-          detail: {
-            tags: ['Auth'],
-            summary: 'Sign Out',
-          },
-        }
+        SignOutDoc
       )
 
       .use(bearer())
@@ -72,11 +54,8 @@ export const auth = (app: Elysia) =>
           return res
         },
         {
+          ...GetMeDoc,
           beforeHandle: requireAuth('CHECK_AUTHENTICATED'),
-          detail: {
-            tags: ['Auth'],
-            summary: 'Get User Authenticated',
-          },
         }
       )
   )

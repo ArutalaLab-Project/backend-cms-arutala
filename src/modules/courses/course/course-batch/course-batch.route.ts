@@ -1,14 +1,15 @@
 import bearer from '@elysiajs/bearer'
-import Elysia, { t } from 'elysia'
+import Elysia from 'elysia'
 import { assertAuth } from '../../../../utils/assertAuth'
-import {
-  CourseBatchModel,
-  CourseBatchPosterUploadModel,
-  ParamsCourseBatchModel,
-} from './course-batch.model'
 import { CourseBatchController } from './course-batch.controller'
 import { requireAuth } from '../../../../guards/auth.guard'
-import { ParamsCourseModel } from '../course.model'
+import {
+  AddCourseBatchDoc,
+  DeleteCourseBatchDoc,
+  GetCourseBatchByIdDoc,
+  UpdateCourseBatchDoc,
+  UploadCourseBatchPosterDoc,
+} from './course-batch.doc'
 
 export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
   .use(bearer())
@@ -25,13 +26,8 @@ export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
       return res
     },
     {
+      ...AddCourseBatchDoc,
       beforeHandle: requireAuth('CREATE_COURSE'),
-      body: CourseBatchModel,
-      params: ParamsCourseModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-batch] Create a New Batch for Course',
-      },
     }
   )
   .post(
@@ -45,13 +41,8 @@ export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
       return res
     },
     {
+      ...UploadCourseBatchPosterDoc,
       beforeHandle: requireAuth('CREATE_COURSE'),
-      body: CourseBatchPosterUploadModel,
-      params: ParamsCourseBatchModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-batch] Upload Poster for Batch of Course',
-      },
     }
   )
 
@@ -61,12 +52,7 @@ export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
       const res = await CourseBatchController.getCourseBatchByBatchId(params)
       return res
     },
-    {
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-batch] Get Course Batch by Course Id and Batch Id',
-      },
-    }
+    GetCourseBatchByIdDoc
   )
 
   .patch(
@@ -80,13 +66,8 @@ export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
       return res
     },
     {
+      ...UpdateCourseBatchDoc,
       beforeHandle: requireAuth('UPDATE_COURSE'),
-      body: t.Partial(CourseBatchModel),
-      params: ParamsCourseBatchModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-batch] Update Batch in Course by Batch Id',
-      },
     }
   )
 
@@ -98,11 +79,7 @@ export const courseBatch = new Elysia({ prefix: '/:courseId/batch' })
       return res
     },
     {
+      ...DeleteCourseBatchDoc,
       beforeHandle: requireAuth('DELETE_COURSE'),
-      params: ParamsCourseBatchModel,
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-batch] Delete Batch in Course by Batch Id',
-      },
     }
   )

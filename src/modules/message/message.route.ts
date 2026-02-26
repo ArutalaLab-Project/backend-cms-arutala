@@ -1,13 +1,15 @@
 import { Elysia } from 'elysia'
 import { MessageController } from './message.controller'
-import {
-  MessageModel,
-  MessageUpdateModel,
-  ParamsMessageModel,
-} from './message.model'
 import { requireAuth } from '../../guards/auth.guard'
 import { bearer } from '@elysiajs/bearer'
 import { assertAuth } from '../../utils/assertAuth'
+import {
+  AddMessageDoc,
+  DeleteMessageDoc,
+  GetAllMessageDoc,
+  GetMessageByIdDoc,
+  UpdateMessageDoc,
+} from './message.doc'
 
 export const message = new Elysia().group('/messages', (app) =>
   app
@@ -18,13 +20,7 @@ export const message = new Elysia().group('/messages', (app) =>
         set.status = 201
         return res
       },
-      {
-        body: MessageModel,
-        detail: {
-          tags: ['Message'],
-          summary: 'Create a New Message',
-        },
-      }
+      AddMessageDoc
     )
 
     .use(bearer())
@@ -35,11 +31,8 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
+        ...GetAllMessageDoc,
         beforeHandle: requireAuth('READ_MESSAGE'),
-        detail: {
-          tags: ['Message'],
-          summary: 'Get All Message',
-        },
       }
     )
 
@@ -50,12 +43,8 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
+        ...GetMessageByIdDoc,
         beforeHandle: requireAuth('READ_MESSAGE'),
-        params: ParamsMessageModel,
-        detail: {
-          tags: ['Message'],
-          summary: 'Get Message by Id',
-        },
       }
     )
 
@@ -70,13 +59,8 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
+        ...UpdateMessageDoc,
         beforeHandle: requireAuth('UPDATE_MESSAGE'),
-        body: MessageUpdateModel,
-        params: ParamsMessageModel,
-        detail: {
-          tags: ['Message'],
-          summary: 'Update Message by Id',
-        },
       }
     )
 
@@ -89,12 +73,8 @@ export const message = new Elysia().group('/messages', (app) =>
         return res
       },
       {
+        ...DeleteMessageDoc,
         beforeHandle: requireAuth('DELETE_MESSAGE'),
-        params: ParamsMessageModel,
-        detail: {
-          tags: ['Message'],
-          summary: 'Delete Message by Id',
-        },
       }
     )
 )

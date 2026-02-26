@@ -52,16 +52,17 @@ export class ArticleService {
     const { status } = query
 
     if (status) {
-      conditions.push(`a.article_status =  $${idx}`)
+      conditions.push(`a.article_status =  $${idx++}`)
       values.push(status.toUpperCase())
     }
+
     const { rows } = await supabasePool.query(
       `SELECT 
         a.article_id, a.article_title, 
         a.article_content_text, a.article_content_blocks, 
         a.article_cover_url, a.article_cover_description,
         a.article_status, a.created_date, u.full_name as author
-      FROM articles a  JOIN users u ON a.created_by = u.user_id
+      FROM articles a JOIN users u ON a.created_by = u.user_id
       WHERE ${conditions.join(' AND ')}`,
       values
     )

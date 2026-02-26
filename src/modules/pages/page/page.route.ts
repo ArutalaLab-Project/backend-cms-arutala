@@ -3,7 +3,13 @@ import Elysia from 'elysia'
 import { PageController } from './page.controller'
 import { assertAuth } from '../../../utils/assertAuth'
 import { requireAuth } from '../../../guards/auth.guard'
-import { PageModel, ParamsPageModel } from './page.model'
+import {
+  AddPageDoc,
+  DeletePageDoc,
+  GetAllPageDoc,
+  GetPageByIdDoc,
+  UpdatePageDoc,
+} from './page.doc'
 
 export const page = new Elysia()
   .use(bearer())
@@ -18,12 +24,8 @@ export const page = new Elysia()
       return res
     },
     {
+      ...AddPageDoc,
       beforeHandle: requireAuth('CREATE_PAGE'),
-      body: PageModel,
-      detail: {
-        tags: ['Pages'],
-        summary: 'Create a New Pages',
-      },
     }
   )
   .get(
@@ -33,11 +35,8 @@ export const page = new Elysia()
       return res
     },
     {
+      ...GetAllPageDoc,
       beforeHandle: requireAuth('READ_PAGE'),
-      detail: {
-        tags: ['Pages'],
-        summary: 'Get All Pages',
-      },
     }
   )
 
@@ -48,12 +47,8 @@ export const page = new Elysia()
       return res
     },
     {
+      ...GetPageByIdDoc,
       beforeHandle: requireAuth('READ_PAGE'),
-      params: ParamsPageModel,
-      detail: {
-        tags: ['Pages'],
-        summary: 'Get Page by Id',
-      },
     }
   )
 
@@ -68,13 +63,8 @@ export const page = new Elysia()
       return res
     },
     {
+      ...UpdatePageDoc,
       beforeHandle: requireAuth('UPDATE_PAGE'),
-      body: PageModel,
-      params: ParamsPageModel,
-      detail: {
-        tags: ['Pages'],
-        summary: 'Update Page by Id',
-      },
     }
   )
 
@@ -85,11 +75,7 @@ export const page = new Elysia()
       return res
     },
     {
+      ...DeletePageDoc,
       beforeHandle: requireAuth('DELETE_PAGE'),
-      params: ParamsPageModel,
-      detail: {
-        tags: ['Pages'],
-        summary: 'Delete Page by Id',
-      },
     }
   )

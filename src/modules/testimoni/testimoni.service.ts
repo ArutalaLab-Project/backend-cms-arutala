@@ -46,11 +46,16 @@ export class TestimoniService {
       conditions.push(`testimoni_category = $${idx++}`)
       values.push(category.toUpperCase())
     }
+
+    if (query.isDisplayed !== undefined) {
+      conditions.push(`is_displayed = $${idx++}`)
+      values.push(query.isDisplayed === 'true')
+    }
     const { rows } = await supabasePool.query(
       `SELECT 
         testimoni_id, author_name, 
         author_job_title, author_company_name, 
-        author_profile_url, testimoni_content, testimoni_category
+        author_profile_url, testimoni_content, testimoni_category, is_displayed
       FROM testimonies
       WHERE ${conditions.join(' AND ')}`,
       values
@@ -72,7 +77,7 @@ export class TestimoniService {
     const { rows } = await supabasePool.query(
       `SELECT 
         testimoni_id, author_name, author_job_title, author_company_name, 
-        author_profile_url, testimoni_content, testimoni_category
+        author_profile_url, testimoni_content, testimoni_category, is_displayed
       FROM testimonies WHERE testimoni_id = $1`,
       [testimoniId]
     )
@@ -109,6 +114,10 @@ export class TestimoniService {
     if (payload.testimoniCategory) {
       fields.push(`testimoni_category = $${idx++}`)
       values.push(payload.testimoniCategory)
+    }
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
     if (authorProfileUrl) {
       fields.push(`author_profile_url = $${idx++}`)

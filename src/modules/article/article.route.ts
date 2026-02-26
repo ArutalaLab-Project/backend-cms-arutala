@@ -1,17 +1,20 @@
 import bearer from '@elysiajs/bearer'
-import Elysia, { t } from 'elysia'
+import Elysia from 'elysia'
 import { requireAuth } from '../../guards/auth.guard'
-import {
-  ArticleCoverModel,
-  ArticleModel,
-  ArticleUpdateModel,
-  ContentImageUploadModel,
-  ParamsArticleModel,
-  QueryArticleStatusModel,
-} from './article.model'
 import { ArticleController } from './article.controller'
 import { assertAuth } from '../../utils/assertAuth'
+import {
+  AddArticleDoc,
+  AddCoverArticleDoc,
+  DeleteArticleDoc,
+  GetAllArticleDoc,
+  GetArticleByIdDoc,
+  UpdateArticleDoc,
+  UpdateCoverArticleDoc,
+  UploadContentImageDoc,
+} from './article.doc'
 
+// Main Article routes with external documentation
 export const article = new Elysia().group('/article', (app) =>
   app
     .use(bearer())
@@ -26,12 +29,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...AddArticleDoc,
         beforeHandle: requireAuth('CREATE_ARTICLE'),
-        body: ArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Create a New Article',
-        },
       }
     )
     .get(
@@ -40,13 +39,7 @@ export const article = new Elysia().group('/article', (app) =>
         const res = await ArticleController.getAllArticleController(query)
         return res
       },
-      {
-        query: QueryArticleStatusModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Get All Article',
-        },
-      }
+      GetAllArticleDoc
     )
 
     .get(
@@ -55,13 +48,7 @@ export const article = new Elysia().group('/article', (app) =>
         const res = await ArticleController.getArticleByIdController(params)
         return res
       },
-      {
-        params: ParamsArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Get Article by Id',
-        },
-      }
+      GetArticleByIdDoc
     )
     .patch(
       '/:articleId',
@@ -74,13 +61,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...UpdateArticleDoc,
         beforeHandle: requireAuth('UPDATE_ARTICLE'),
-        body: ArticleUpdateModel,
-        params: ParamsArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Update Article by Id',
-        },
       }
     )
 
@@ -91,12 +73,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...UploadContentImageDoc,
         beforeHandle: requireAuth('CREATE_COURSE'),
-        body: ContentImageUploadModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Upload konten image pada Article',
-        },
       }
     )
 
@@ -107,12 +85,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...DeleteArticleDoc,
         beforeHandle: requireAuth('DELETE_ARTICLE'),
-        params: ParamsArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Delete Article by Id',
-        },
       }
     )
 
@@ -126,13 +100,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...AddCoverArticleDoc,
         beforeHandle: requireAuth('CREATE_ARTICLE'),
-        body: ArticleCoverModel,
-        params: ParamsArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Add cover for article',
-        },
       }
     )
 
@@ -147,13 +116,8 @@ export const article = new Elysia().group('/article', (app) =>
         return res
       },
       {
+        ...UpdateCoverArticleDoc,
         beforeHandle: requireAuth('UPDATE_ARTICLE'),
-        body: t.Partial(ArticleCoverModel),
-        params: ParamsArticleModel,
-        detail: {
-          tags: ['Article'],
-          summary: 'Add cover for article',
-        },
       }
     )
 )
