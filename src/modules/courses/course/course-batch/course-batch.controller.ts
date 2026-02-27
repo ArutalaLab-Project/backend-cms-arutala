@@ -1,3 +1,4 @@
+import { BadRequest } from '../../../../exceptions/client.error'
 import { upload } from '../../../../shared/services/upload'
 import { AuthUser } from '../../../../types/auth.type'
 import { ApiResponse } from '../../../../types/response.type'
@@ -77,6 +78,14 @@ export class CourseBatchController {
       await CourseService.verifyCourseisExist(courseId),
       await CourseBatchService.verfifyCourseBatchisExist(batchId),
     ])
+
+    const { poster_url } = await CourseBatchService.getCourseBatchByBatchId(
+      params.batchId,
+      params.batchId
+    )
+    if (payload.batchStatus === 'OPEN' && poster_url === null) {
+      throw new BadRequest('Batch tidak dapat dibuka sebelum ada poster')
+    }
     const course_batch_name = await CourseBatchService.updateCourseBatch(
       payload,
       batchId,

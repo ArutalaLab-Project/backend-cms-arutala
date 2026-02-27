@@ -1,8 +1,30 @@
-import { ResourceNotFoundError } from '../../../../exceptions/client.error'
+import {
+  BadRequest,
+  ResourceNotFoundError,
+} from '../../../../exceptions/client.error'
 import { supabasePool } from '../../../../supabase/supabasePool'
 import { ParamsSeoProps, SeoProps } from './seo.model'
 
 export class SeoService {
+  static async verifySeoIsExist(seoId: string) {
+    const { rows } = await supabasePool.query(
+      `SELECT 1 FROM seos WHERE seo_id = $1`,
+      [seoId]
+    )
+
+    if (rows.length === 0) {
+      throw new ResourceNotFoundError('Resource seo tidak ditemukan')
+    }
+  }
+  static async verifyPageHasActiveSeo(pageId: string) {
+    const { rows } = await supabasePool.query(
+      `SELECT 1 FROM seos WHERE seo_page_id = $1 AND is_active = TRUE AND is_deleted = FALSE LIMIT 1`,
+      [pageId]
+    )
+    if (rows.length === 0) {
+      throw new BadRequest('Masih terdapat SEO yang aktif')
+    }
+  }
   static async addSeo(
     payload: SeoProps,
     pageId: string,
@@ -35,17 +57,6 @@ export class SeoService {
       [seoId]
     )
     return rows[0]
-  }
-
-  static async verifySeoIsExist(seoId: string) {
-    const { rows } = await supabasePool.query(
-      `SELECT 1 FROM seos WHERE seo_id = $1`,
-      [seoId]
-    )
-
-    if (rows.length === 0) {
-      throw new ResourceNotFoundError('Resource seo tidak ditemukan')
-    }
   }
 
   static async updateSeo(

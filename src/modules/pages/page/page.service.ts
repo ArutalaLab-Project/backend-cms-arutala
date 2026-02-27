@@ -34,12 +34,26 @@ export class PageService {
   static async getAllPages() {
     const { rows } = await supabasePool.query(
       `SELECT 
-        child.page_id, child.page_title, child.page_slug,
-        parent.page_title AS parent_page_title
+        child.page_id,
+        child.page_title,
+        child.page_slug,
+        parent.page_title AS parent_page_title,
+        CASE 
+            WHEN COUNT(s.seo_id) = 0
+              THEN 'NO_SEO'
+            WHEN SUM(CASE WHEN s.is_active = TRUE THEN 1 ELSE 0 END) > 0 
+              THEN 'ACTIVE'
+            ELSE 'INACTIVE'
+        END AS seo_status
+
       FROM pages AS child
       LEFT JOIN pages AS parent
         ON child.parent_page_id = parent.page_id
-      WHERE child.is_deleted = FALSE;`
+      LEFT JOIN seos AS s
+        ON s.seo_page_id = child.page_id
+        
+      WHERE child.is_deleted = FALSE
+      GROUP BY child.page_id, child.page_title, child.page_slug, parent.page_title`
     )
     return rows
   }

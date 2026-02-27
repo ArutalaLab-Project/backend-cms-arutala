@@ -58,7 +58,7 @@ export class ArticleService {
 
     const { rows } = await supabasePool.query(
       `SELECT 
-        a.article_id, a.article_title, 
+        a.article_id, a.article_title, a.article_page_id,
         a.article_content_text, a.article_content_blocks, 
         a.article_cover_url, a.article_cover_description,
         a.article_status, a.created_date, u.full_name as author
@@ -82,7 +82,7 @@ export class ArticleService {
   static async getArticleById(articleId: string) {
     const { rows } = await supabasePool.query(
       `SELECT 
-        a.article_id, a.article_title, 
+        a.article_id, a.article_title, a.article_page_id,
         a.article_cover_url, a.article_cover_description, 
         a.article_content_blocks, a.article_content_text, 
         a.article_status, a.created_date, u.full_name as author

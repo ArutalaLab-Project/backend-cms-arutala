@@ -82,10 +82,9 @@ const App = new Elysia()
   })
 
   // Route Endpoint
-
+  .get('/', () => 'Welcome To Arutala CMS API')
   .group('/v2', (app) =>
     app
-      .get('/', () => 'Welcome To Arutala CMS API')
       .use(auth)
       .use(user)
       .use(analytics)
