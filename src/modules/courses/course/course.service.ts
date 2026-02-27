@@ -120,6 +120,7 @@ export class CourseService {
       COALESCE(
         (
           SELECT json_build_object(
+            'id', cb.course_batch_id,
             'name', cb.course_batch_name,
             'status', cb.course_batch_status,
             'posterUrl', cb.course_batch_poster_url,

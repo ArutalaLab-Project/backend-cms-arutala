@@ -1,3 +1,4 @@
+import { BadRequest } from '../../exceptions/client.error'
 import { upload } from '../../shared/services/upload'
 import { AuthUser } from '../../types/auth.type'
 import { ApiResponse } from '../../types/response.type'
@@ -90,6 +91,13 @@ export class ArticleController {
         contentText,
         contentBlocks: payload.contentBlocks,
       }
+    }
+
+    const { article_cover_url } = await ArticleService.getArticleById(
+      params.articleId
+    )
+    if (payload.status === 'PUBLISHED' && article_cover_url === null) {
+      throw new BadRequest('Article tidak dapat dipublish sebelum upload cover')
     }
 
     const { article_title } = await ArticleService.updateArticle(

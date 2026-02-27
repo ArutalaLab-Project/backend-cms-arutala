@@ -15,6 +15,7 @@ export class SeoController {
     const { pageId } = params
 
     await PageService.verifyPageIsExist(pageId)
+    await SeoService.verifyPageHasActiveSeo(pageId)
     const seoId = await SeoService.addSeo(payload, pageId, user.user_id)
 
     return ResponseHelper.created('Menambah SEO pada page berhasil', seoId)
@@ -44,6 +45,7 @@ export class SeoController {
     user: AuthUser
   ): Promise<ApiResponse> {
     await SeoService.verifySeoIsExist(params.seoId)
+    await SeoService.verifyPageHasActiveSeo(params.pageId)
     const { seo_id } = await SeoService.updateSeo(payload, params, user.user_id)
     return ResponseHelper.success(`Mengubah SEO : '${seo_id}' berhasil`)
   }
