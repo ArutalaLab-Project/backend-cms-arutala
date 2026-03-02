@@ -140,16 +140,22 @@ export class CourseService {
             LEFT JOIN contributors ctr
               ON cb.course_batch_contributor_id = ctr.contributor_id
             LEFT JOIN course_prices cp
-              ON cb.course_batch_id = cb.course_batch_id
+              ON cb.course_batch_id = cp.course_price_course_batch_id
             WHERE cb.course_batch_course_id = c.course_id
-            ORDER BY cb.course_batch_start_date DESC
+            ORDER BY 
+              CASE 
+                WHEN NOW() BETWEEN cb.course_batch_registration_start AND cb.course_batch_registration_end THEN 1
+                WHEN cb.course_batch_registration_start > NOW() THEN 2
+                ELSE 3
+              END ASC,
+              cb.course_batch_registration_start ASC
             LIMIT 1
         ),'{}'::json
       ) AS course_batch
 
       FROM courses c
-      JOIN course_categories cc ON c.category_id = cc.course_category_id
-      JOIN course_fields cf ON c.field_id = cf.course_field_id
+      LEFT JOIN course_categories cc ON c.category_id = cc.course_category_id
+      LEFT JOIN course_fields cf ON c.field_id = cf.course_field_id
       WHERE c.is_deleted = false 
       ${whereClause}
       ORDER BY c.created_date DESC
