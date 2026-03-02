@@ -252,6 +252,7 @@ export class CourseBatchService {
     const {
       batchName,
       contributorId,
+      registrationUrl,
       registrationStart,
       registrationEnd,
       startDate,
@@ -266,6 +267,10 @@ export class CourseBatchService {
     if (contributorId) {
       fields.push(`course_batch_contributor_id = $${idx++}`)
       values.push(contributorId)
+    }
+    if (registrationUrl) {
+      fields.push(`course_batch_registration_url = $${idx++}`)
+      values.push(registrationUrl)
     }
     if (registrationStart) {
       fields.push(`course_batch_registration_start = $${idx++}`)
