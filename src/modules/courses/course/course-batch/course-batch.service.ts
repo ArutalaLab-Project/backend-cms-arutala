@@ -17,11 +17,11 @@ export class CourseBatchService {
     const {
       batchName,
       contributorId,
+      registrationUrl,
       registrationStart,
       registrationEnd,
       startDate,
       endDate,
-      batchStatus,
       batchSession,
       batchPrice,
     } = payload
@@ -30,19 +30,19 @@ export class CourseBatchService {
       const { rows } = await client.query(
         `INSERT INTO course_batches (
           course_batch_course_id, course_batch_name,
-          course_batch_contributor_id, course_batch_registration_start, 
-          course_batch_registration_end, course_batch_start_date,
-          course_batch_end_date, course_batch_status, created_by)
+          course_batch_contributor_id, course_batch_registration_url, 
+          course_batch_registration_start, course_batch_registration_end,
+          course_batch_start_date, course_batch_end_date, created_by)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING course_batch_id`,
         [
           courseId,
           batchName,
           contributorId,
+          registrationUrl,
           registrationStart,
           registrationEnd,
           startDate,
           endDate,
-          batchStatus,
           userWhocreated,
         ]
       )
@@ -180,22 +180,6 @@ export class CourseBatchService {
 
   static async getCourseBatchByCourseId(courseId: string) {
     const { rows } = await supabasePool.query(
-      // `SELECT
-      //   cb.course_batch_id, cb.course_batch_name as name, cb.course_batch_poster_url as poster_url,
-      //     cb.course_batch_registration_start as registration_start,
-      //     cb.course_batch_registration_end as registration_end,
-      //     cb.course_batch_start_date as start_date, cb.course_batch_end_date as end_date,
-      //     cb.course_batch_status as batch_status,
-      //   c.contributor_name as instructor_name, c.contributor_job_title as instrutor_job_title,
-      //     c.contributor_company_name as instructor_company_name,
-      //     c.contributor_profile_url as instructor_profile_url,
-      //   cp.base_price, cp.discount_type, cp.discount_value, cp.final_price
-      // FROM course_batches cb
-      // JOIN contributors c
-      //   ON cb.course_batch_contributor_id = c.contributor_id
-      // JOIN course_prices cp
-      //   ON cb.course_batch_id = cp.course_price_course_batch_id
-      // WHERE course_batch_course_id = $1`,
       `SELECT 
         cb.course_batch_id,
         cb.course_batch_name as name,
@@ -268,6 +252,7 @@ export class CourseBatchService {
     const {
       batchName,
       contributorId,
+      registrationUrl,
       registrationStart,
       registrationEnd,
       startDate,
@@ -282,6 +267,10 @@ export class CourseBatchService {
     if (contributorId) {
       fields.push(`course_batch_contributor_id = $${idx++}`)
       values.push(contributorId)
+    }
+    if (registrationUrl) {
+      fields.push(`course_batch_registration_url = $${idx++}`)
+      values.push(registrationUrl)
     }
     if (registrationStart) {
       fields.push(`course_batch_registration_start = $${idx++}`)

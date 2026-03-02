@@ -22,29 +22,22 @@ export const CourseModel = t.Object({
     format: 'uuid',
     error: 'Format uuid tidak valid',
   }),
+  courseHeadline: t.String({
+    minLength: 5,
+    maxLength: 255,
+    error: 'Headline course minimal 5 dan maksimal 255 karakter',
+  }),
   courseBenefits: CourseBenefitModel,
   courseMaterials: CourseMaterialModel,
-  isDisplayed: t.Optional(t.Boolean()),
 })
 
 export type CourseProps = Static<typeof CourseModel>
 
 // Model Query Parameter Get All Course
 export const QueryCourseModel = t.Object({
-  field: t.Optional(
-    t.String({
-      error: "query 'field' harus merupakan string",
-    })
-  ),
   available: t.Optional(
     t.Boolean({
       error: "Query 'available' harus merupakan boolean",
-    })
-  ),
-  isDisplayed: t.Optional(
-    t.String({
-      pattern: '^(true|false)$',
-      error: 'isDisplayed harus string "true" atau "false"',
     })
   ),
 })

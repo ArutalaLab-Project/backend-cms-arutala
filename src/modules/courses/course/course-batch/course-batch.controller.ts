@@ -15,7 +15,7 @@ import { CourseBatchService } from './course-batch.service'
 
 export class CourseBatchController {
   static async addCourseBatchController(
-    payload: CourseBatchProps,
+    payload: Omit<CourseBatchProps, 'batchStatus'>,
     params: ParamsCourseProps,
     user: AuthUser
   ): Promise<ApiResponse> {
@@ -80,10 +80,13 @@ export class CourseBatchController {
     ])
 
     const { poster_url } = await CourseBatchService.getCourseBatchByBatchId(
-      params.batchId,
+      params.courseId,
       params.batchId
     )
-    if (payload.batchStatus === 'OPEN' && poster_url === null) {
+    if (
+      (payload.batchStatus === 'OPEN' || payload.batchStatus === 'ON_GOING') &&
+      poster_url === null
+    ) {
       throw new BadRequest('Batch tidak dapat dibuka sebelum ada poster')
     }
     const course_batch_name = await CourseBatchService.updateCourseBatch(

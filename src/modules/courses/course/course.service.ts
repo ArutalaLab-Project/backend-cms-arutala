@@ -11,6 +11,7 @@ export class CourseService {
     const {
       courseTitle,
       courseDescription,
+      courseHeadline,
       courseCategoryId,
       courseFieldId,
       courseBenefits,
@@ -20,11 +21,12 @@ export class CourseService {
       await client.query('BEGIN')
 
       const { rows } = await client.query(
-        `INSERT INTO courses(course_title, course_description, category_id, field_id, created_by)
-          VALUES ($1, $2, $3, $4, $5) RETURNING course_id`,
+        `INSERT INTO courses(course_title, course_description, course_headline, category_id, field_id, created_by)
+          VALUES ($1, $2, $3, $4, $5, $6) RETURNING course_id`,
         [
           courseTitle,
           courseDescription,
+          courseHeadline,
           courseCategoryId,
           courseFieldId,
           userWhocreated,
@@ -78,29 +80,18 @@ export class CourseService {
     const values: any[] = []
     const conditions: string[] = []
 
-    if (query.field) {
-      values.push(query.field)
-      conditions.push(
-        `lower(cf.course_field_name) LIKE lower($${values.length})`
-      )
-    }
-
     if (query.available !== undefined) {
-      values.push(query.available)
+      const isAvailable = String(query.available) === 'true'
+      values.push(isAvailable)
       conditions.push(`
       EXISTS (
         SELECT 1
         FROM course_batches cb
         WHERE cb.course_batch_course_id = c.course_id
-          AND cb.course_batch_registration_start <= NOW()
+          AND cb.course_batch_status = 'OPEN'
           AND cb.course_batch_registration_end >= NOW()
       ) = $${values.length}
     `)
-    }
-
-    if (query.isDisplayed !== undefined) {
-      values.push(query.isDisplayed === 'true')
-      conditions.push(`c.is_displayed = $${values.length}`)
     }
 
     const whereClause = conditions.length
@@ -113,7 +104,7 @@ export class CourseService {
         c.course_id,
         c.course_title,
         c.course_description,
-        c.is_displayed,
+        c.course_headline,
         cc.course_category_name,
         cf.course_field_name,
 
@@ -149,7 +140,7 @@ export class CourseService {
             LEFT JOIN contributors ctr
               ON cb.course_batch_contributor_id = ctr.contributor_id
             LEFT JOIN course_prices cp
-              ON cb.course_batch_id = cp.course_price_course_batch_id
+              ON cb.course_batch_id = cb.course_batch_id
             WHERE cb.course_batch_course_id = c.course_id
             ORDER BY cb.course_batch_start_date DESC
             LIMIT 1
@@ -172,39 +163,54 @@ export class CourseService {
   static async getUpcomingCourse() {
     const { rows } = await supabasePool.query(
       `
-      WITH nearest_open_batch AS (
-        SELECT DISTINCT ON (cb.course_batch_course_id)
+      WITH prioritized_batches AS (
+        SELECT 
+          cb.course_batch_id,
           cb.course_batch_course_id,
-          cb.course_batch_id
+          c.category_id,
+          cb.course_batch_name,
+          cb.course_batch_poster_url,
+          cb.course_batch_registration_url,
+          cb.course_batch_start_date,
+          cb.course_batch_registration_end,
+          CASE 
+            WHEN NOW() BETWEEN cb.course_batch_registration_start AND cb.course_batch_registration_end THEN 1
+            WHEN cb.course_batch_registration_start > NOW() THEN 2
+            ELSE 3
+          END as priority
         FROM course_batches cb
-        WHERE cb.course_batch_status = 'OPEN'
-        AND CURRENT_DATE BETWEEN cb.course_batch_registration_start AND cb.course_batch_registration_end
-        ORDER BY cb.course_batch_course_id, cb.course_batch_start_date ASC
+        JOIN courses c ON cb.course_batch_course_id = c.course_id
+        WHERE c.is_deleted = false AND cb.course_batch_status != 'DRAFT'
+      ),
+      nearest_batch_per_category AS (
+        SELECT DISTINCT ON (category_id)
+          *
+        FROM prioritized_batches
+        WHERE priority IN (1, 2)
+        ORDER BY category_id, priority ASC, course_batch_start_date ASC
       )
 
-      SELECT DISTINCT ON (cc.course_category_id)
+      SELECT 
         c.course_id,
         c.course_title,
         c.course_description,
+        c.course_headline,
         cc.course_category_name,
+        cf.course_field_name,
 
         json_build_object(
-          'name', cb.course_batch_name,
-          'posterUrl', cb.course_batch_poster_url,
-          'registration_url', cb.course_batch_registration_url,
-          'start_date', cb.course_batch_start_date,
-          'registration_end', cb.course_batch_registration_end
+          'name', nb.course_batch_name,
+          'posterUrl', nb.course_batch_poster_url,
+          'registration_url', nb.course_batch_registration_url,
+          'start_date', nb.course_batch_start_date,
+          'registration_end', nb.course_batch_registration_end
         ) AS nearest_batch
 
-      FROM nearest_open_batch nob
-      JOIN courses c
-        ON nob.course_batch_course_id = c.course_id
-      JOIN course_categories cc
-        ON c.category_id = cc.course_category_id
-      JOIN course_batches cb
-        ON nob.course_batch_id = cb.course_batch_id
-      WHERE c.is_deleted = false
-      ORDER BY cc.course_category_id, cb.course_batch_start_date ASC;
+      FROM nearest_batch_per_category nb
+      JOIN courses c ON nb.course_batch_course_id = c.course_id
+      JOIN course_categories cc ON c.category_id = cc.course_category_id
+      JOIN course_fields cf ON c.field_id = cf.course_field_id
+      ORDER BY cc.course_category_name ASC;
       `
     )
     return rows
@@ -216,7 +222,7 @@ export class CourseService {
         c.course_id,
         c.course_title,
         c.course_description,
-        c.is_displayed,
+        c.course_headline,
         cc.course_category_name,
         cf.course_field_name
       FROM courses c
@@ -248,6 +254,11 @@ export class CourseService {
       fields.push(`course_description = $${idx++}`)
       values.push(payload.courseDescription)
     }
+    if (payload.courseHeadline) {
+      fields.push(`course_headline = $${idx++}`)
+      values.push(payload.courseHeadline)
+    }
+
     if (payload.courseCategoryId) {
       fields.push(`category_id = $${idx++}`)
       values.push(payload.courseCategoryId)
@@ -255,10 +266,6 @@ export class CourseService {
     if (payload.courseFieldId) {
       fields.push(`field_id = $${idx++}`)
       values.push(payload.courseFieldId)
-    }
-    if (payload.isDisplayed !== undefined) {
-      fields.push(`is_displayed = $${idx++}`)
-      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)
