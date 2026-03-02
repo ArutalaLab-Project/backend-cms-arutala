@@ -14,11 +14,37 @@ const CourseDataSchema = t.Object({
   }),
   course_title: t.String({ description: 'Title of the course' }),
   course_description: t.String({ description: 'Description of the course' }),
-  is_displayed: t.Boolean({ description: 'Whether the course is displayed' }),
+  course_headline: t.String({ description: 'Headline of the course' }),
   course_category_name: t.String({ description: 'Name of the category' }),
   course_field_name: t.String({ description: 'Name of the field' }),
   // Nested data for Latest Batch
-  latest_batch: t.Optional(t.Any({ description: 'Latest batch information' })),
+  course_batch: t.Object({
+    id: t.Optional(t.String()),
+    name: t.Optional(t.String()),
+    status: t.Optional(t.String()),
+    posterUrl: t.Optional(t.Nullable(t.String())),
+    registration_url: t.Optional(t.String()),
+    registration_start: t.Optional(t.String()),
+    registration_end: t.Optional(t.String()),
+    start_date: t.Optional(t.String()),
+    end_date: t.Optional(t.String()),
+    instructor: t.Optional(
+      t.Object({
+        name: t.String(),
+        jobTitle: t.String(),
+        companyName: t.String(),
+        profileUrl: t.Nullable(t.String()),
+      })
+    ),
+    prices: t.Optional(
+      t.Object({
+        basePrice: t.Number(),
+        discountType: t.Nullable(t.String()),
+        discountValue: t.Nullable(t.Number()),
+        finalPrice: t.Number(),
+      })
+    ),
+  }),
 })
 
 // 2. Response Schemas
@@ -39,8 +65,9 @@ export const GetCourseByIdResponse = {
         t.Intersect([
           CourseDataSchema,
           t.Object({
-            benefits: t.Array(t.Any()),
-            materials: t.Array(t.Any()),
+            courseBenefit: t.Array(t.Any()),
+            courseMaterial: t.Array(t.Any()),
+            courseBatch: t.Array(t.Any()),
           }),
         ])
       ),
@@ -99,7 +126,32 @@ export const GetUpcomingCourseDoc = {
     tags: CourseTags,
     summary: '[course] Get Upcoming Course (1 category 1 course)',
     responses: {
-      200: GetAllCourseResponse, // Reuse the same list schema
+      200: {
+        description: 'Berhasil mengambil data upcoming course',
+        content: {
+          'application/json': {
+            schema: createResponseSchema(
+              t.Array(
+                t.Object({
+                  course_id: t.String({ format: 'uuid' }),
+                  course_title: t.String(),
+                  course_description: t.String(),
+                  course_headline: t.String(),
+                  course_category_name: t.String(),
+                  course_field_name: t.String(),
+                  nearest_batch: t.Object({
+                    name: t.String(),
+                    posterUrl: t.Nullable(t.String()),
+                    registration_url: t.String(),
+                    start_date: t.String(),
+                    registration_end: t.String(),
+                  }),
+                })
+              )
+            ),
+          },
+        },
+      },
     },
   },
 }

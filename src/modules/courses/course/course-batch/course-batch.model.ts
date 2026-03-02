@@ -39,15 +39,12 @@ export const CoursePriceModel = t.Object({
   basePrice: t.Number({
     error: 'Base price harus berupa angka',
   }),
-
   discountType: t.Optional(t.Union([t.Literal('PERCENT'), t.Literal('FIXED')])),
-
   discountValue: t.Optional(
     t.Number({
       error: 'Discount value harus berupa angka',
     })
   ),
-
   finalPrice: t.Optional(
     t.Number({
       error: 'Final price harus berupa angka',
@@ -63,35 +60,36 @@ export const CourseBatchModel = t.Object({
     maxLength: 255,
     error: 'Nama batch minimal 5 dan maksimal 255 karakter',
   }),
-
   contributorId: t.String({
     format: 'uuid',
     error: 'Format contributorId harus UUID',
   }),
-
+  registrationUrl: t.String({
+    format: 'uri',
+    error: 'Registration URL harus berupa URL',
+  }),
   registrationStart: t.String({
     format: 'date',
     error: 'Format registrationStart harus date (YYYY-MM-DD)',
   }),
-
   registrationEnd: t.String({
     format: 'date',
     error: 'Format registrationEnd harus date (YYYY-MM-DD)',
   }),
-
   startDate: t.String({
     format: 'date',
     error: 'Format startDate harus date (YYYY-MM-DD)',
   }),
-
   endDate: t.String({
     format: 'date',
     error: 'Format endDate harus date (YYYY-MM-DD)',
   }),
 
-  batchStatus: t.Enum(BatchStatus, {
-    error: 'Batch status tidak valid',
-  }),
+  batchStatus: t.Optional(
+    t.Enum(BatchStatus, {
+      error: 'Batch status tidak valid',
+    })
+  ),
 
   batchSession: CourseSessionModel,
   batchPrice: CoursePriceModel,

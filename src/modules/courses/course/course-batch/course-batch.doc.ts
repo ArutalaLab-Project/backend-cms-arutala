@@ -13,22 +13,40 @@ const CourseBatchDataSchema = t.Object({
     format: 'uuid',
     description: 'Unique ID of the course batch',
   }),
-  course_batch_name: t.String({ description: 'Name of the batch' }),
-  course_batch_status: t.Enum(BatchStatus, {
+  name: t.String({ description: 'Name of the batch' }),
+  batch_status: t.Enum(BatchStatus, {
     description: 'Current status of the batch',
   }),
-  course_batch_poster_url: t.String({ description: 'URL of the batch poster' }),
-  course_batch_registration_url: t.String({
+  poster_url: t.Nullable(t.String({ description: 'URL of the batch poster' })),
+  registration_url: t.String({
     description: 'URL for registration',
   }),
-  course_batch_registration_start: t.String({ format: 'date' }),
-  course_batch_registration_end: t.String({ format: 'date' }),
-  course_batch_start_date: t.String({ format: 'date' }),
-  course_batch_end_date: t.String({ format: 'date' }),
-  // Complex nested objects
-  sessions: t.Array(t.Any(), { description: 'Batch sessions' }),
-  price: t.Any({ description: 'Batch price information' }),
-  instructor: t.Any({ description: 'Batch instructor information' }),
+  registration_start: t.String({ format: 'date' }),
+  registration_end: t.String({ format: 'date' }),
+  start_date: t.String({ format: 'date' }),
+  end_date: t.String({ format: 'date' }),
+  // Flat instructor fields from JOIN
+  instructor_id: t.String({ format: 'uuid' }),
+  instructor_name: t.String(),
+  instructor_job_title: t.String(),
+  instructor_company_name: t.String(),
+  instructor_profile_url: t.Nullable(t.String()),
+  // Flat price fields from JOIN
+  base_price: t.Number(),
+  discount_type: t.Nullable(t.String()),
+  discount_value: t.Nullable(t.Number()),
+  final_price: t.Number(),
+  // Nested sessions
+  sessions: t.Array(
+    t.Object({
+      course_session_id: t.Number(),
+      topic: t.String(),
+      date: t.String({ format: 'date' }),
+      start_time: t.String(),
+      end_time: t.String(),
+    }),
+    { description: 'Batch sessions' }
+  ),
 })
 
 // 2. Response Schemas
@@ -91,7 +109,17 @@ export const UploadCourseBatchPosterDoc = {
     tags: CourseBatchTags,
     summary: '[course-batch] Upload Poster for Batch of Course',
     responses: {
-      200: SimpleSuccessResponse('Poster uploaded'),
+      200: {
+        description: 'Poster uploaded',
+        content: {
+          'application/json': {
+            schema: createResponseSchema(
+              t.Object({ poster_url: t.String() }),
+              'Upload poster pada batch berhasil'
+            ),
+          },
+        },
+      },
     },
   },
 }
