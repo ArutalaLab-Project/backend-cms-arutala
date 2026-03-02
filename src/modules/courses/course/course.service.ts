@@ -16,13 +16,14 @@ export class CourseService {
       courseFieldId,
       courseBenefits,
       courseMaterials,
+      isDisplayed,
     } = payload
     try {
       await client.query('BEGIN')
 
       const { rows } = await client.query(
-        `INSERT INTO courses(course_title, course_description, course_headline, category_id, field_id, created_by)
-          VALUES ($1, $2, $3, $4, $5, $6) RETURNING course_id`,
+        `INSERT INTO courses(course_title, course_description, course_headline, category_id, field_id, created_by, is_displayed)
+          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING course_id`,
         [
           courseTitle,
           courseDescription,
@@ -30,6 +31,7 @@ export class CourseService {
           courseCategoryId,
           courseFieldId,
           userWhocreated,
+          isDisplayed ?? false,
         ]
       )
 
@@ -94,6 +96,12 @@ export class CourseService {
     `)
     }
 
+    if (query.isDisplayed !== undefined) {
+      const isDisplayed = String(query.isDisplayed) === 'true'
+      values.push(isDisplayed)
+      conditions.push(`c.is_displayed = $${values.length}`)
+    }
+
     const whereClause = conditions.length
       ? `AND ${conditions.join(' AND ')}`
       : ''
@@ -105,6 +113,7 @@ export class CourseService {
         c.course_title,
         c.course_description,
         c.course_headline,
+        c.is_displayed,
         cc.course_category_name,
         cf.course_field_name,
 
@@ -186,7 +195,7 @@ export class CourseService {
           END as priority
         FROM course_batches cb
         JOIN courses c ON cb.course_batch_course_id = c.course_id
-        WHERE c.is_deleted = false AND cb.course_batch_status != 'DRAFT'
+        WHERE c.is_deleted = false AND c.is_displayed = true AND cb.course_batch_status != 'DRAFT'
       ),
       nearest_batch_per_category AS (
         SELECT DISTINCT ON (category_id)
@@ -230,7 +239,8 @@ export class CourseService {
         c.course_description,
         c.course_headline,
         cc.course_category_name,
-        cf.course_field_name
+        cf.course_field_name,
+        c.is_displayed
       FROM courses c
       JOIN course_categories cc ON c.category_id = cc.course_category_id
       JOIN course_fields cf ON c.field_id = cf.course_field_id
@@ -272,6 +282,11 @@ export class CourseService {
     if (payload.courseFieldId) {
       fields.push(`field_id = $${idx++}`)
       values.push(payload.courseFieldId)
+    }
+
+    if (payload.isDisplayed !== undefined) {
+      fields.push(`is_displayed = $${idx++}`)
+      values.push(payload.isDisplayed)
     }
 
     fields.push(`updated_by = $${idx++}`)

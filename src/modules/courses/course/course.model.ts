@@ -29,6 +29,7 @@ export const CourseModel = t.Object({
   }),
   courseBenefits: CourseBenefitModel,
   courseMaterials: CourseMaterialModel,
+  isDisplayed: t.Optional(t.Boolean()),
 })
 
 export type CourseProps = Static<typeof CourseModel>
@@ -38,6 +39,12 @@ export const QueryCourseModel = t.Object({
   available: t.Optional(
     t.Boolean({
       error: "Query 'available' harus merupakan boolean",
+    })
+  ),
+  isDisplayed: t.Optional(
+    t.String({
+      pattern: '^(true|false)$',
+      error: 'isDisplayed harus string "true" atau "false"',
     })
   ),
 })
