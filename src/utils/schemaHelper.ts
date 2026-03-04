@@ -19,5 +19,6 @@ export const createResponseSchema = (
  */
 export const ErrorResponseSchema = t.Object({
   success: t.Boolean({ default: false }),
+  statusCode: t.String(),
   message: t.String(),
 })
