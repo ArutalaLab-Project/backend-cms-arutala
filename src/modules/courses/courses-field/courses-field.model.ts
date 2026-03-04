@@ -13,7 +13,7 @@ export type CourseFieldRequest = Static<typeof CourseFieldRequestSchema>
 // RESPONSE
 export const CourseFieldResponseSchema = t.Object({
   id: t.String({ format: 'uuid' }),
-  fieldName: t.String(),
+  field: t.String(),
 })
 export type CourseFieldResponse = Static<typeof CourseFieldResponseSchema>
 

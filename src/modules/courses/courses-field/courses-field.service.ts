@@ -12,7 +12,7 @@ export const mapToResponse = (
 ): CourseFieldResponse => {
   return {
     id: courseField.course_field_id,
-    fieldName: courseField.course_field_name,
+    field: courseField.course_field_name,
   }
 }
 

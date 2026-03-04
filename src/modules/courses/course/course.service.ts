@@ -91,7 +91,7 @@ export class CourseService {
         FROM course_batches cb
         WHERE cb.course_batch_course_id = c.course_id
           AND cb.course_batch_status = 'OPEN'
-          AND cb.course_batch_registration_end >= NOW()
+          AND cb.course_batch_registration_end >= CURRENT_DATE
       ) = $${values.length}
     `)
     }
@@ -153,11 +153,13 @@ export class CourseService {
             WHERE cb.course_batch_course_id = c.course_id
             ORDER BY 
               CASE 
-                WHEN NOW() BETWEEN cb.course_batch_registration_start AND cb.course_batch_registration_end THEN 1
-                WHEN cb.course_batch_registration_start > NOW() THEN 2
-                ELSE 3
+                WHEN cb.course_batch_status = 'OPEN' THEN 1
+                WHEN cb.course_batch_status = 'SCHEDULED' THEN 2
+                WHEN cb.course_batch_status = 'ON_GOING' THEN 3
+                WHEN cb.course_batch_status = 'COMPLETED' THEN 4
+                ELSE 5
               END ASC,
-              cb.course_batch_registration_start ASC
+              cb.course_batch_registration_start DESC
             LIMIT 1
         ),'{}'::json
       ) AS course_batch
@@ -189,9 +191,11 @@ export class CourseService {
           cb.course_batch_start_date,
           cb.course_batch_registration_end,
           CASE 
-            WHEN NOW() BETWEEN cb.course_batch_registration_start AND cb.course_batch_registration_end THEN 1
-            WHEN cb.course_batch_registration_start > NOW() THEN 2
-            ELSE 3
+            WHEN cb.course_batch_status = 'OPEN' THEN 1
+            WHEN cb.course_batch_status = 'SCHEDULED' THEN 2
+            WHEN cb.course_batch_status = 'ON GOING' THEN 3
+            WHEN cb.course_batch_status = 'COMPLETED' THEN 4
+            ELSE 5
           END as priority
         FROM course_batches cb
         JOIN courses c ON cb.course_batch_course_id = c.course_id
