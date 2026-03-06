@@ -36,7 +36,7 @@ export const page = new Elysia()
     },
     {
       ...GetAllPageDoc,
-      beforeHandle: requireAuth('READ_PAGE'),
+      // beforeHandle: requireAuth('READ_PAGE'),
     }
   )
 
@@ -48,7 +48,7 @@ export const page = new Elysia()
     },
     {
       ...GetPageByIdDoc,
-      beforeHandle: requireAuth('READ_PAGE'),
+      // beforeHandle: requireAuth('READ_PAGE'),
     }
   )
 
