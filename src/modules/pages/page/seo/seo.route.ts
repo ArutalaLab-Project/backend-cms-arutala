@@ -38,7 +38,7 @@ export const seo = new Elysia({ prefix: '/:pageId/seo' })
     },
     {
       ...GetSeoByPageIdDoc,
-      beforeHandle: requireAuth('READ_SEO'),
+      // beforeHandle: requireAuth('READ_SEO'),
     }
   )
   .get(
@@ -49,7 +49,7 @@ export const seo = new Elysia({ prefix: '/:pageId/seo' })
     },
     {
       ...GetSeoByIdDoc,
-      beforeHandle: requireAuth('READ_SEO'),
+      // beforeHandle: requireAuth('READ_SEO'),
     }
   )
   .patch(
