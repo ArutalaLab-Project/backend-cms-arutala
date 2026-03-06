@@ -4,19 +4,22 @@ import { AnalyticsService } from './analytics.service'
 
 export class AnalyticsController {
   static async getOverviewController(): Promise<ApiResponse> {
-    const [recentMessages, upcomingCourses, messageStats] = await Promise.all([
-      AnalyticsService.getRecentMessages(5),
-      AnalyticsService.getUpcomingCourses(5),
-      AnalyticsService.getMessageMonthlyStats(),
-    ])
+    const [messageStats, messageMonthly, messageStatus, messageSubject] =
+      await Promise.all([
+        AnalyticsService.getMessageStatistical(),
+        AnalyticsService.getMessageMonthlyStats(),
+        AnalyticsService.getMessageStatus(),
+        AnalyticsService.getMessageSubject(),
+      ])
 
     return ResponseHelper.success(`Mengambil overview analytics berhasil`, {
       messages: {
-        recent: recentMessages,
-        stats: messageStats,
-      },
-      courses: {
-        upcoming: upcomingCourses,
+        stats: {
+          messageStats,
+          messageMonthly,
+          messageStatus,
+          messageSubject,
+        },
       },
     })
   }
