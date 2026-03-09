@@ -12,14 +12,16 @@ export class PageController {
   ): Promise<ApiResponse> {
     const { pageTitle, parentPage } = payload
     let parentPageId = null
-    let pageSlug
+    // let pageSlug
 
-    if (parentPage) {
-      parentPageId = await PageService.getParentPageId(parentPage)
-      pageSlug = await generateUniquePageSlug(payload.pageTitle, parentPage)
-    } else {
-      pageSlug = await generateUniquePageSlug(payload.pageTitle)
-    }
+    // if (parentPage) {
+    //   parentPageId = await PageService.getParentPageId(parentPage)
+    //   pageSlug = await generateUniquePageSlug(payload.pageTitle, parentPage)
+    // } else {
+    //   pageSlug = await generateUniquePageSlug(payload.pageTitle)
+    // }
+
+    const pageSlug = await generateUniquePageSlug(pageTitle)
 
     const pageId = await PageService.addPage(
       pageTitle,
@@ -34,6 +36,17 @@ export class PageController {
   static async getAllController(): Promise<ApiResponse> {
     const pages = await PageService.getAllPages()
     return ResponseHelper.success('Mengahmbil semua data page berhasil', pages)
+  }
+
+  static async getActiveSeoBySlugPathController(
+    slugPath: string
+  ): Promise<ApiResponse> {
+    const seoPage = await PageService.getActiveSeoBySlugPath(slugPath)
+
+    return ResponseHelper.success(
+      'Berhasil mengambil SEO aktif pada page',
+      seoPage
+    )
   }
 
   static async getPageByIdController(
