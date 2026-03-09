@@ -10,9 +10,20 @@ import {
   GetPageByIdDoc,
   UpdatePageDoc,
 } from './page.doc'
+import { ParamsSlugPathModel } from './page.model'
 
 export const page = new Elysia()
+
   .use(bearer())
+  .get(
+    '/public/seo-active/*',
+    async ({ params }) => {
+      return await PageController.getActiveSeoBySlugPathController(params['*'])
+    },
+    {
+      params: ParamsSlugPathModel,
+    }
+  )
   .post(
     '/',
     async ({ body, store, set }) => {
@@ -39,6 +50,19 @@ export const page = new Elysia()
       // beforeHandle: requireAuth('READ_PAGE'),
     }
   )
+
+  // .get(
+  //   '/public/:pageSlug/seo-active',
+  //   async ({ params }) => {
+  //     const res = await PageController.getActiveSeoByPageSlugController(
+  //       params.pageSlug
+  //     )
+  //     return res
+  //   },
+  //   {
+  //     params: ParamsPageSlugModel,
+  //   }
+  // )
 
   .get(
     '/:pageId',

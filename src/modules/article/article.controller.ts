@@ -25,8 +25,8 @@ export class ArticleController {
       payload.contentBlocks
     )
 
-    const parentPageId = await PageService.getParentPageId('Article')
-    const pageSlug = await generateUniquePageSlug(title, 'Article')
+    const parentPageId = await PageService.getParentPageId('Articles')
+    const pageSlug = await generateUniquePageSlug(title)
 
     const { page_id } = await PageService.addPage(
       title,

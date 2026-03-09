@@ -21,3 +21,12 @@ export const ParamsPageModel = t.Object({
   }),
 })
 export type ParamsPageProps = Static<typeof ParamsPageModel>
+
+// Params Page
+export const ParamsSlugPathModel = t.Object({
+  '*': t.String({
+    error: 'Format slug path tidak valid',
+  }),
+})
+
+export type ParamsSlugPathProps = Static<typeof ParamsSlugPathModel>

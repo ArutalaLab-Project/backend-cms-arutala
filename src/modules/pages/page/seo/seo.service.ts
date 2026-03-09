@@ -21,7 +21,7 @@ export class SeoService {
       `SELECT 1 FROM seos WHERE seo_page_id = $1 AND is_active = TRUE AND is_deleted = FALSE LIMIT 1`,
       [pageId]
     )
-    if (rows.length === 0) {
+    if (rows.length >= 1) {
       throw new BadRequest('Masih terdapat SEO yang aktif')
     }
   }
