@@ -6,7 +6,11 @@ import { CourseBenefitService } from '../courses-benefit/course-benefit.service'
 import { CourseMaterialService } from './course-material/course_material.service'
 
 export class CourseService {
-  static async addCourse(payload: CourseProps, userWhocreated: string) {
+  static async addCourse(
+    payload: CourseProps,
+    userWhocreated: string,
+    pageId: string
+  ) {
     const client = await supabasePool.connect()
     const {
       courseTitle,
@@ -22,8 +26,8 @@ export class CourseService {
       await client.query('BEGIN')
 
       const { rows } = await client.query(
-        `INSERT INTO courses(course_title, course_description, course_headline, category_id, field_id, created_by, is_displayed)
-          VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING course_id`,
+        `INSERT INTO courses(course_title, course_description, course_headline, category_id, field_id, created_by, is_displayed, course_page_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING course_id`,
         [
           courseTitle,
           courseDescription,
@@ -32,6 +36,7 @@ export class CourseService {
           courseFieldId,
           userWhocreated,
           isDisplayed ?? false,
+          pageId,
         ]
       )
 
@@ -353,7 +358,7 @@ export class CourseService {
 
   static async deleteCourse(courseId: string) {
     const { rows } = await supabasePool.query(
-      `UPDATE courses SET is_deleted = TRUE WHERE course_id = $1 RETURNING course_title `,
+      `UPDATE courses SET is_deleted = TRUE WHERE course_id = $1 RETURNING course_title, course_page_id `,
       [courseId]
     )
     return rows[0]
