@@ -198,7 +198,7 @@ export class CourseService {
           CASE 
             WHEN cb.course_batch_status = 'OPEN' THEN 1
             WHEN cb.course_batch_status = 'SCHEDULED' THEN 2
-            WHEN cb.course_batch_status = 'ON GOING' THEN 3
+            WHEN cb.course_batch_status = 'ON_GOING' THEN 3
             WHEN cb.course_batch_status = 'COMPLETED' THEN 4
             ELSE 5
           END as priority
