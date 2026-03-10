@@ -119,8 +119,9 @@ export class ArticleController {
   ): Promise<ApiResponse> {
     const { articleId } = params
     await ArticleService.verifyArticleIsExist(articleId)
-    const { article_title } = await ArticleService.deleteArticle(articleId)
-    await PageService.deletePage(articleId)
+    const { article_title, article_page_id } =
+      await ArticleService.deleteArticle(articleId)
+    await PageService.deletePage(article_page_id)
     return ResponseHelper.success(
       `Menghapus article : '${article_title}' berhasil`
     )
