@@ -21,13 +21,17 @@ export class CourseController {
     const parentPageId = await PageService.getParentPageId('Courses')
     const pageSlug = await generateUniquePageSlug(payload.courseTitle)
 
-    await PageService.addPage(
+    const { page_id } = await PageService.addPage(
       payload.courseTitle,
       parentPageId,
       pageSlug,
       user.user_id
     )
-    const course_id = await CourseService.addCourse(payload, user.user_id)
+    const course_id = await CourseService.addCourse(
+      payload,
+      user.user_id,
+      page_id
+    )
     return ResponseHelper.created('Menambah course berhasil', { course_id })
   }
 
@@ -94,7 +98,9 @@ export class CourseController {
   ): Promise<ApiResponse> {
     const { courseId } = params
     await CourseService.verifyCourseisExist(courseId)
-    const { course_title } = await CourseService.deleteCourse(courseId)
+    const { course_title, course_page_id } =
+      await CourseService.deleteCourse(courseId)
+    await PageService.deletePage(course_page_id)
     return ResponseHelper.success(`Menghapus course: ${course_title} berhasil`)
   }
 }
