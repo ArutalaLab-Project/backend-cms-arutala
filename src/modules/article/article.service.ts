@@ -149,7 +149,7 @@ export class ArticleService {
       `UPDATE articles 
       SET is_deleted = TRUE 
       WHERE article_id = $1 
-      RETURNING article_title`,
+      RETURNING article_title, article_page_id`,
       [articleId]
     )
     return rows[0]

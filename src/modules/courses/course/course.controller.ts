@@ -10,12 +10,23 @@ import { CourseService } from './course.service'
 import { CourseBenefitService } from '../courses-benefit/course-benefit.service'
 import { CourseMaterialService } from './course-material/course_material.service'
 import { CourseBatchService } from './course-batch/course-batch.service'
+import { PageService } from '../../pages/page/page.service'
+import { generateUniquePageSlug } from '../../../utils/slug'
 
 export class CourseController {
   static async addCourseController(
     payload: CourseProps,
     user: AuthUser
   ): Promise<ApiResponse> {
+    const parentPageId = await PageService.getParentPageId('Courses')
+    const pageSlug = await generateUniquePageSlug(payload.courseTitle)
+
+    await PageService.addPage(
+      payload.courseTitle,
+      parentPageId,
+      pageSlug,
+      user.user_id
+    )
     const course_id = await CourseService.addCourse(payload, user.user_id)
     return ResponseHelper.created('Menambah course berhasil', { course_id })
   }
