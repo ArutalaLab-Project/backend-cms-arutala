@@ -1,3 +1,4 @@
+import { upload } from '../../../../shared/services/upload'
 import { AuthUser } from '../../../../types/auth.type'
 import { ApiResponse } from '../../../../types/response.type'
 import { ResponseHelper } from '../../../../utils/responseHelper'
@@ -16,7 +17,13 @@ export class SeoController {
 
     await PageService.verifyPageIsExist(pageId)
     await SeoService.verifyPageHasActiveSeo(pageId)
-    const seoId = await SeoService.addSeo(payload, pageId, user.user_id)
+    const referenceImage = await upload(payload.referenceImage, '/seo')
+    const seoId = await SeoService.addSeo(
+      payload,
+      referenceImage,
+      pageId,
+      user.user_id
+    )
 
     return ResponseHelper.created('Menambah SEO pada page berhasil', seoId)
   }
@@ -46,8 +53,24 @@ export class SeoController {
   ): Promise<ApiResponse> {
     await SeoService.verifySeoIsExist(params.seoId)
     await SeoService.verifyPageHasActiveSeo(params.pageId)
-    const { seo_id } = await SeoService.updateSeo(payload, params, user.user_id)
-    return ResponseHelper.success(`Mengubah SEO : '${seo_id}' berhasil`)
+
+    if (payload.referenceImage) {
+      const referenceImageUrl = await upload(payload.referenceImage, '/seo')
+      const { seo_id } = await SeoService.updateSeo(
+        payload,
+        params,
+        user.user_id,
+        referenceImageUrl
+      )
+      return ResponseHelper.success(`Mengubah SEO : '${seo_id}' berhasil`)
+    } else {
+      const { seo_id } = await SeoService.updateSeo(
+        payload,
+        params,
+        user.user_id
+      )
+      return ResponseHelper.success(`Mengubah SEO : '${seo_id}' berhasil`)
+    }
   }
 
   static async changeStatusSeoController(

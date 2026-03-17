@@ -10,16 +10,8 @@ export class PageController {
     payload: PageProps,
     user: AuthUser
   ): Promise<ApiResponse> {
-    const { pageTitle, parentPage } = payload
+    const { pageTitle } = payload
     let parentPageId = null
-    // let pageSlug
-
-    // if (parentPage) {
-    //   parentPageId = await PageService.getParentPageId(parentPage)
-    //   pageSlug = await generateUniquePageSlug(payload.pageTitle, parentPage)
-    // } else {
-    //   pageSlug = await generateUniquePageSlug(payload.pageTitle)
-    // }
 
     const pageSlug = await generateUniquePageSlug(pageTitle)
 
