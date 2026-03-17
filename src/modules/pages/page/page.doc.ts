@@ -1,6 +1,6 @@
 import { t } from 'elysia'
 import { createResponseSchema } from '../../../utils/schemaHelper'
-import { PageModel, ParamsPageModel } from './page.model'
+import { PageModel, ParamsPageModel, ParamsSlugPathModel } from './page.model'
 
 // 1. Data Structure for Documentation
 const PageDataSchema = t.Object({
@@ -37,6 +37,11 @@ export const GetPageByIdResponse = {
   },
 }
 
+export const getPageWithSeoActiveResponse = {
+  description: 'Berhasil mengambil Seo active pada page ini',
+  content: { 'application/json': {} },
+}
+
 export const CreatedPageResponse = {
   description: 'Berhasil menambah pages baru',
   content: {
@@ -60,6 +65,17 @@ const SimpleSuccessResponse = (msg: string) => ({
 
 // 3. Complete Route Documentation Objects
 const PageTags = ['Pages']
+
+export const getPageWithSeoActive = {
+  params: ParamsSlugPathModel,
+  detail: {
+    tags: PageTags,
+    summary: 'Get Page With Seo Active',
+    responses: {
+      200: getPageWithSeoActiveResponse,
+    },
+  },
+}
 
 export const AddPageDoc = {
   body: PageModel,

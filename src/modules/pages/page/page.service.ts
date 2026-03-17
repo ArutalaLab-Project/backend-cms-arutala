@@ -105,7 +105,10 @@ export class PageService {
           JSON_BUILD_OBJECT(
             'seo_id', s.seo_id,
             'meta_title', s.meta_title,
-            'meta_description', s.meta_description
+            'meta_description', s.meta_description,
+            'reference_image', s.seo_reference_image,
+            'keyword', s.seo_keyword,
+            'type', s.seo_type
           ) as seos
         
       FROM seos s
