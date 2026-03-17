@@ -26,24 +26,40 @@ export class SeoService {
     }
   }
   static async addSeo(
-    payload: SeoProps,
+    payload: Omit<SeoProps, 'referenceImage'>,
+    referenceImageUrl: string,
     pageId: string,
     userWhoCreated: string
   ) {
     const { metaTitle, metaDescription } = payload
     const { rows } = await supabasePool.query(
-      `INSERT INTO seos (seo_page_id, meta_title, meta_description, created_by)
-        VALUES ($1, $2, $3, $4) RETURNING seo_id`,
-      [pageId, metaTitle, metaDescription, userWhoCreated]
+      `INSERT INTO seos (
+        seo_page_id, meta_title, 
+        meta_description, seo_reference_image, 
+        seo_keyword, seo_type, created_by
+      )
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING seo_id`,
+      [
+        pageId,
+        metaTitle,
+        metaDescription,
+        referenceImageUrl,
+        payload.keyword,
+        payload.type,
+        userWhoCreated,
+      ]
     )
     return rows[0]
   }
 
   static async getSeoByPageId(pageId: string) {
     const { rows } = await supabasePool.query(
-      `SELECT seo_id, meta_title, meta_description, is_active
-        FROM seos 
-        WHERE is_deleted = FALSE AND seo_page_id = $1`,
+      `SELECT 
+        seo_id, meta_title, 
+        meta_description, seo_reference_image, 
+        seo_keyword, seo_type, is_active
+      FROM seos 
+      WHERE is_deleted = FALSE AND seo_page_id = $1`,
       [pageId]
     )
     return rows
@@ -51,18 +67,22 @@ export class SeoService {
 
   static async getSeoById(seoId: string) {
     const { rows } = await supabasePool.query(
-      `SELECT seo_id, meta_title, meta_description, is_active
-        FROM seos
-        WHERE is_deleted = FALSE AND seo_id = $1`,
+      `SELECT 
+        seo_id, meta_title, 
+        meta_description, seo_reference_image, 
+        seo_keyword, seo_type, is_active
+      FROM seos
+      WHERE is_deleted = FALSE AND seo_id = $1`,
       [seoId]
     )
     return rows[0]
   }
 
   static async updateSeo(
-    payload: Partial<SeoProps>,
+    payload: Partial<Omit<SeoProps, 'referenceImage'>>,
     params: ParamsSeoProps,
-    userWhoUpdated: string
+    userWhoUpdated: string,
+    referenceImageUrl?: string
   ) {
     const { seoId } = params
     const fields: String[] = []
@@ -77,6 +97,21 @@ export class SeoService {
     if (payload.metaDescription) {
       fields.push(`meta_description = $${idx++}`)
       values.push(payload.metaDescription)
+    }
+
+    if (payload.keyword) {
+      fields.push(`seo_keyword = $${idx++}`)
+      values.push(payload.keyword)
+    }
+
+    if (payload.type) {
+      fields.push(`seo_type = $${idx++}`)
+      values.push(payload.type)
+    }
+
+    if (referenceImageUrl) {
+      fields.push(`seo_reference_image = $${idx++}`)
+      values.push(referenceImageUrl)
     }
 
     fields.push(`updated_by = $${idx++}`)
