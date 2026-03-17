@@ -8,9 +8,9 @@ import {
   DeletePageDoc,
   GetAllPageDoc,
   GetPageByIdDoc,
+  getPageWithSeoActive,
   UpdatePageDoc,
 } from './page.doc'
-import { ParamsSlugPathModel } from './page.model'
 
 export const page = new Elysia()
 
@@ -21,7 +21,8 @@ export const page = new Elysia()
       return await PageController.getActiveSeoBySlugPathController(params['*'])
     },
     {
-      params: ParamsSlugPathModel,
+      ...getPageWithSeoActive,
+      // params: ParamsSlugPathModel,
     }
   )
   .post(
