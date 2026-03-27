@@ -23,10 +23,20 @@ export const SeoModel = t.Object({
     error:
       'File harus berupa gambar (JPG, PNG, WEBP) dengan ukuran maksimal 5MB',
   }),
-  keyword: t.Array(t.String(), {
-    minItems: 1,
-    error: 'Isi minimal satu subjek',
-  }),
+  keyword: t
+    .Transform(
+      t.Union([
+        t.String({ error: 'Isi minimal 1 keyword' }),
+        t.Array(t.String(), {
+          minItems: 1,
+          error: 'Isi minimal 1 keyword',
+        }),
+      ])
+    )
+    .Decode((value) => {
+      return Array.isArray(value) ? value : [value]
+    })
+    .Encode((value) => value),
   type: t.Enum(SeoType, {
     error:
       'Type tidak valid. Pilih salah satu antara website, article atau profile',
