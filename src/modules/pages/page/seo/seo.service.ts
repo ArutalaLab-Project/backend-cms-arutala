@@ -128,17 +128,55 @@ export class SeoService {
     return rows[0]
   }
 
+  // static async changeStatusSeo(seoId: string, userWhoUpdated: string) {
+  //   const { rows } = await supabasePool.query(
+  //     `UPDATE seos
+  //     SET
+  //       is_active = NOT is_active,
+  //       updated_by = $1, updated_date = NOW()
+  //     WHERE seo_id = $2
+  //     RETURNING seo_id`,
+  //     [userWhoUpdated, seoId]
+  //   )
+  //   return rows[0]
+  // }
+
   static async changeStatusSeo(seoId: string, userWhoUpdated: string) {
-    const { rows } = await supabasePool.query(
-      `UPDATE seos  
-      SET 
-        is_active = NOT is_active, 
-        created_by = $1, updated_date = NOW()
-      WHERE seo_id = $2 
-      RETURNING seo_id`,
-      [userWhoUpdated, seoId]
+    // cek status sekarang
+    const { rows: current } = await supabasePool.query(
+      `SELECT is_active FROM seos WHERE seo_id = $1`,
+      [seoId]
     )
-    return rows[0]
+
+    const isActive = current[0].is_active
+
+    if (isActive) {
+      // 🔴 kalau sudah aktif → nonaktifkan saja
+      await supabasePool.query(
+        `UPDATE seos
+       SET is_active = false,
+           updated_by = $1,
+           updated_date = NOW()
+       WHERE seo_id = $2`,
+        [userWhoUpdated, seoId]
+      )
+    } else {
+      // 🟢 kalau belum aktif → aktifkan dan matikan yang lain
+      await supabasePool.query(
+        `UPDATE seos
+       SET 
+         is_active = CASE 
+           WHEN seo_id = $2 THEN true
+           ELSE false
+         END,
+         updated_by = $1,
+         updated_date = NOW()
+       WHERE is_active = true OR seo_id = $2`,
+        [userWhoUpdated, seoId]
+      )
+    }
+
+    return { seo_id: seoId }
   }
 
   static async deleteSeo(params: ParamsSeoProps) {
