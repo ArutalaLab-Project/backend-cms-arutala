@@ -154,26 +154,41 @@ export class SeoService {
       // 🔴 kalau sudah aktif → nonaktifkan saja
       await supabasePool.query(
         `UPDATE seos
-       SET is_active = false,
-           updated_by = $1,
-           updated_date = NOW()
-       WHERE seo_id = $2`,
+        SET is_active = false,
+          updated_by = $1,
+          updated_date = NOW()
+        WHERE seo_id = $2`,
         [userWhoUpdated, seoId]
       )
     } else {
-      // 🟢 kalau belum aktif → aktifkan dan matikan yang lain
-      await supabasePool.query(
-        `UPDATE seos
-       SET 
-         is_active = CASE 
-           WHEN seo_id = $2 THEN true
-           ELSE false
-         END,
-         updated_by = $1,
-         updated_date = NOW()
-       WHERE is_active = true OR seo_id = $2`,
-        [userWhoUpdated, seoId]
-      )
+      await supabasePool.query('BEGIN')
+
+      try {
+        // 1. Nonaktifkan semua dalam page yang sama
+        await supabasePool.query(
+          `UPDATE seos
+          SET is_active = false
+          WHERE seo_page_id = (
+            SELECT seo_page_id FROM seos WHERE seo_id = $1
+          )`,
+          [seoId]
+        )
+
+        // 2. Aktifkan yang dipilih
+        await supabasePool.query(
+          `UPDATE seos
+          SET is_active = true,
+            updated_by = $1,
+            updated_date = NOW()
+          WHERE seo_id = $2`,
+          [userWhoUpdated, seoId]
+        )
+
+        await supabasePool.query('COMMIT')
+      } catch (err) {
+        await supabasePool.query('ROLLBACK')
+        throw err
+      }
     }
 
     return { seo_id: seoId }
