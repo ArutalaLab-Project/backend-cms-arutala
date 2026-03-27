@@ -115,6 +115,7 @@ export class CourseService {
       `
       SELECT
         c.course_id,
+        c.course_page_id,
         c.course_title,
         c.course_description,
         c.course_headline,

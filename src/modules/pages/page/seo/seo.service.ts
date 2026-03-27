@@ -183,7 +183,6 @@ export class SeoService {
           WHERE seo_id = $2`,
           [userWhoUpdated, seoId]
         )
-
         await supabasePool.query('COMMIT')
       } catch (err) {
         await supabasePool.query('ROLLBACK')
