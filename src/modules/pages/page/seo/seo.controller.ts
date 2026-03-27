@@ -16,7 +16,7 @@ export class SeoController {
     const { pageId } = params
 
     await PageService.verifyPageIsExist(pageId)
-    await SeoService.verifyPageHasActiveSeo(pageId)
+    // await SeoService.verifyPageHasActiveSeo(pageId)
     const referenceImage = await upload(payload.referenceImage, '/seo')
     const seoId = await SeoService.addSeo(
       payload,
@@ -52,7 +52,7 @@ export class SeoController {
     user: AuthUser
   ): Promise<ApiResponse> {
     await SeoService.verifySeoIsExist(params.seoId)
-    await SeoService.verifyPageHasActiveSeo(params.pageId)
+    // await SeoService.verifyPageHasActiveSeo(params.pageId)
 
     if (payload.referenceImage) {
       const referenceImageUrl = await upload(payload.referenceImage, '/seo')
