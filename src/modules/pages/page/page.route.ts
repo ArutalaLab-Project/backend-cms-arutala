@@ -22,7 +22,6 @@ export const page = new Elysia()
     },
     {
       ...getPageWithSeoActive,
-      // params: ParamsSlugPathModel,
     }
   )
   .post(
@@ -48,22 +47,8 @@ export const page = new Elysia()
     },
     {
       ...GetAllPageDoc,
-      // beforeHandle: requireAuth('READ_PAGE'),
     }
   )
-
-  // .get(
-  //   '/public/:pageSlug/seo-active',
-  //   async ({ params }) => {
-  //     const res = await PageController.getActiveSeoByPageSlugController(
-  //       params.pageSlug
-  //     )
-  //     return res
-  //   },
-  //   {
-  //     params: ParamsPageSlugModel,
-  //   }
-  // )
 
   .get(
     '/:pageId',
@@ -73,7 +58,6 @@ export const page = new Elysia()
     },
     {
       ...GetPageByIdDoc,
-      // beforeHandle: requireAuth('READ_PAGE'),
     }
   )
 

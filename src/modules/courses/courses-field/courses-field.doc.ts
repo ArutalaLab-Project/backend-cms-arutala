@@ -1,14 +1,8 @@
 import { createCrudDocs } from '../../../utils/doc-builder'
-import {
-  CourseFieldParamsSchema,
-  CourseFieldRequestSchema,
-  CourseFieldResponseSchema,
-} from './courses-field.model'
+import { CourseFieldResponseSchema } from './courses-field.model'
 
 export const CourseFieldDocs = createCrudDocs({
   resourceName: 'Course Field',
-  tag: 'Course Field',
-  bodySchema: CourseFieldRequestSchema,
+  tag: 'Courses - Field',
   dataSchema: CourseFieldResponseSchema,
-  paramSchema: CourseFieldParamsSchema,
 })

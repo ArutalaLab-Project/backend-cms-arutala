@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../../utils/doc-builder'
 import {
   CourseModel,
   ParamsCourseModel,
@@ -48,144 +48,89 @@ const CourseDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllCourseResponse = {
-  description: 'Berhasil mengambil semua data course',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(CourseDataSchema)),
-    },
-  },
-}
+export const GetAllCourseResponse = successDoc(
+  t.Array(CourseDataSchema),
+  'Berhasil mengambil semua data course'
+)
 
-export const GetCourseByIdResponse = {
-  description: 'Berhasil mengambil detail course',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Intersect([
-          CourseDataSchema,
-          t.Object({
-            courseBenefit: t.Array(t.Any()),
-            courseMaterial: t.Array(t.Any()),
-            courseBatch: t.Array(t.Any()),
-          }),
-        ])
-      ),
-    },
-  },
-}
+export const GetCourseByIdResponse = successDoc(
+  t.Intersect([
+    CourseDataSchema,
+    t.Object({
+      courseBenefit: t.Array(t.Any()),
+      courseMaterial: t.Array(t.Any()),
+      courseBatch: t.Array(t.Any()),
+    }),
+  ]),
+  'Berhasil mengambil detail course'
+)
 
-export const CreatedCourseResponse = {
-  description: 'Berhasil menambah course baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ course_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedCourseResponse = successDoc(
+  t.Object({ course_id: t.String() }),
+  'Berhasil menambah course baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
-const CourseTags = ['Courses']
+const CourseTags = ['Courses - Master']
 
 export const AddCourseDoc = {
   body: CourseModel,
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Create a New Course',
-    responses: {
-      201: CreatedCourseResponse,
-    },
-  },
+  ...docs('Create a New Course', CourseTags, {
+    201: CreatedCourseResponse,
+  }),
 }
 
 export const GetAllCourseDoc = {
   query: QueryCourseModel,
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Get All Course with Query Parameter (optional)',
-    responses: {
-      200: GetAllCourseResponse,
-    },
-  },
+  ...docs('Get All Course with Query Parameter (optional)', CourseTags, {
+    200: GetAllCourseResponse,
+  }),
 }
 
 export const GetUpcomingCourseDoc = {
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Get Upcoming Course (1 category 1 course)',
-    responses: {
-      200: {
-        description: 'Berhasil mengambil data upcoming course',
-        content: {
-          'application/json': {
-            schema: createResponseSchema(
-              t.Array(
-                t.Object({
-                  course_id: t.String({ format: 'uuid' }),
-                  course_title: t.String(),
-                  course_description: t.String(),
-                  course_headline: t.String(),
-                  course_category_name: t.String(),
-                  course_field_name: t.String(),
-                  nearest_batch: t.Object({
-                    name: t.String(),
-                    posterUrl: t.Nullable(t.String()),
-                    registration_url: t.String(),
-                    start_date: t.String(),
-                    registration_end: t.String(),
-                  }),
-                })
-              )
-            ),
-          },
-        },
-      },
-    },
-  },
+  ...docs('Get Upcoming Course (1 category 1 course)', CourseTags, {
+    200: successDoc(
+      t.Array(
+        t.Object({
+          course_id: t.String({ format: 'uuid' }),
+          course_title: t.String(),
+          course_description: t.String(),
+          course_headline: t.String(),
+          course_category_name: t.String(),
+          course_field_name: t.String(),
+          nearest_batch: t.Object({
+            name: t.String(),
+            posterUrl: t.Nullable(t.String()),
+            registration_url: t.String(),
+            start_date: t.String(),
+            registration_end: t.String(),
+          }),
+        })
+      ),
+      'Berhasil mengambil data upcoming course'
+    ),
+  }),
 }
 
 export const GetCourseByIdDoc = {
   params: ParamsCourseModel,
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Get course By Id',
-    responses: {
-      200: GetCourseByIdResponse,
-    },
-  },
+  ...docs('Get course By Id', CourseTags, {
+    200: GetCourseByIdResponse,
+  }),
 }
 
 export const UpdateCourseDoc = {
   body: t.Partial(CourseModel),
   params: ParamsCourseModel,
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Update Course by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Course by Id', CourseTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteCourseDoc = {
   params: ParamsCourseModel,
-  detail: {
-    tags: CourseTags,
-    summary: '[course] Delete Course by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Course by Id', CourseTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }

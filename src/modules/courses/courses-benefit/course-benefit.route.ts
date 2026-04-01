@@ -2,6 +2,7 @@ import bearer from '@elysiajs/bearer'
 import Elysia from 'elysia'
 import { CourseBenefitController } from './course-benefit.controller'
 import { requireAuth } from '../../../guards/auth.guard'
+import { GetAllCourseBenefitDoc } from './course-benefit.doc'
 
 export const courseBenefit = new Elysia({ prefix: '/courses-benefit' })
   .use(bearer())
@@ -13,9 +14,6 @@ export const courseBenefit = new Elysia({ prefix: '/courses-benefit' })
     },
     {
       beforeHandle: requireAuth('READ_COURSE'),
-      detail: {
-        tags: ['Courses'],
-        summary: '[course-benefit] Get All Course Benefit',
-      },
+      ...GetAllCourseBenefitDoc,
     }
   )

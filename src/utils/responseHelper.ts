@@ -1,4 +1,3 @@
-// import { HttpError } from '../exceptions/Error'
 import type { ApiResponse } from '../types/response.type'
 
 export class ResponseHelper {

@@ -128,19 +128,6 @@ export class SeoService {
     return rows[0]
   }
 
-  // static async changeStatusSeo(seoId: string, userWhoUpdated: string) {
-  //   const { rows } = await supabasePool.query(
-  //     `UPDATE seos
-  //     SET
-  //       is_active = NOT is_active,
-  //       updated_by = $1, updated_date = NOW()
-  //     WHERE seo_id = $2
-  //     RETURNING seo_id`,
-  //     [userWhoUpdated, seoId]
-  //   )
-  //   return rows[0]
-  // }
-
   static async changeStatusSeo(seoId: string, userWhoUpdated: string) {
     // cek status sekarang
     const { rows: current } = await supabasePool.query(

@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../utils/doc-builder'
 import {
   ArticleCoverModel,
   ArticleModel,
@@ -40,142 +40,80 @@ const ArticleDataSchema = t.Object({
 })
 
 // 2. Response Schemas Wrapped for OpenAPI
-export const GetAllArticleResponse = {
-  description: 'Berhasil mengambil semua data artikel',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(ArticleDataSchema)),
-    },
-  },
-}
+export const GetAllArticleResponse = successDoc(
+  t.Array(ArticleDataSchema),
+  'Berhasil mengambil semua data artikel'
+)
 
-export const GetArticleByIdResponse = {
-  description: 'Berhasil mengambil detail artikel',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(ArticleDataSchema),
-    },
-  },
-}
+export const GetArticleByIdResponse = successDoc(
+  ArticleDataSchema,
+  'Berhasil mengambil detail artikel'
+)
 
-export const CreatedArticleResponse = {
-  description: 'Berhasil membuat artikel baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ article_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedArticleResponse = successDoc(
+  t.Object({ article_id: t.String() }),
+  'Berhasil membuat artikel baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
 const ArticleTags = ['Article']
 
 export const AddArticleDoc = {
   body: ArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Create a New Article',
-    responses: {
-      201: CreatedArticleResponse,
-    },
-  },
+  ...docs('Create a New Article', ArticleTags, {
+    201: CreatedArticleResponse,
+  }),
 }
 
 export const GetAllArticleDoc = {
   query: QueryArticleStatusModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Get All Articles',
-    responses: {
-      200: GetAllArticleResponse,
-    },
-  },
+  ...docs('Get All Articles', ArticleTags, {
+    200: GetAllArticleResponse,
+  }),
 }
 
 export const GetArticleByIdDoc = {
   params: ParamsArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Get Article by Id',
-    responses: {
-      200: GetArticleByIdResponse,
-    },
-  },
+  ...docs('Get Article by Id', ArticleTags, {
+    200: GetArticleByIdResponse,
+  }),
 }
 
 export const UpdateArticleDoc = {
   body: ArticleUpdateModel,
   params: ParamsArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Update Article by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Article by Id', ArticleTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteArticleDoc = {
   params: ParamsArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Delete Article by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Article by Id', ArticleTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }
 
 export const UploadContentImageDoc = {
   body: ContentImageUploadModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Upload content image for Article',
-    responses: {
-      201: {
-        description: 'Uploaded',
-        content: {
-          'application/json': {
-            schema: createResponseSchema(t.String(), 'Uploaded'),
-          },
-        },
-      },
-    },
-  },
+  ...docs('Upload content image for Article', ArticleTags, {
+    201: successDoc(t.Object({ file_url: t.String() }), 'Uploaded', 'Uploaded'), // Re-evaluating inline string based on type
+  }),
 }
 
 export const AddCoverArticleDoc = {
   body: ArticleCoverModel,
   params: ParamsArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Add cover for article',
-    responses: {
-      200: SimpleSuccessResponse('Cover added'),
-    },
-  },
+  ...docs('Add cover for article', ArticleTags, {
+    200: simpleSuccessDoc('Cover added'),
+  }),
 }
 
 export const UpdateCoverArticleDoc = {
   body: t.Partial(ArticleCoverModel),
   params: ParamsArticleModel,
-  detail: {
-    tags: ArticleTags,
-    summary: 'Update cover for article',
-    responses: {
-      200: SimpleSuccessResponse('Cover updated'),
-    },
-  },
+  ...docs('Update cover for article', ArticleTags, {
+    200: simpleSuccessDoc('Cover updated'),
+  }),
 }

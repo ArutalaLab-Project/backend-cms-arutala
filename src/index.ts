@@ -22,17 +22,17 @@ const App = new Elysia()
           title: 'Dokumentasi API CMS Arutala',
           version: '1.0.0',
         },
-        tags: [
-          { name: 'Auth', description: 'Authentication Endpoint' },
-          { name: 'User', description: 'User Endpoint' },
-          { name: 'Message', description: 'Message Endpoint' },
-          { name: 'Contributor', description: 'Contributor Endpoint' },
-          { name: 'Mitra', description: 'Mitra Endpoint' },
-          { name: 'Testimoni', description: 'Testimoni Endpoint' },
-          { name: 'Courses', description: 'Courses Endpoint' },
-          { name: 'Pages', description: 'Pages Endpoint' },
-          { name: 'Article', description: 'Article Endpoint' },
-        ],
+        // tags: [
+        //   { name: 'Auth', description: 'Authentication Endpoint' },
+        //   { name: 'User', description: 'User Endpoint' },
+        //   { name: 'Message', description: 'Message Endpoint' },
+        //   { name: 'Contributor', description: 'Contributor Endpoint' },
+        //   { name: 'Mitra', description: 'Mitra Endpoint' },
+        //   { name: 'Testimoni', description: 'Testimoni Endpoint' },
+        //   // { name: 'Courses', description: 'Courses Endpoint' },
+        //   { name: 'Pages', description: 'Pages Endpoint' },
+        //   { name: 'Article', description: 'Article Endpoint' },
+        // ],
       },
     })
   )
@@ -93,18 +93,5 @@ const App = new Elysia()
   .use(testimoni)
   .use(courses)
   .use(article)
-// .group('/v2', (app) =>
-//   app
-//     .use(auth)
-//     .use(user)
-//     .use(analytics)
-//     .use(message)
-//     .use(pages)
-//     .use(contributor)
-//     .use(mitra)
-//     .use(testimoni)
-//     .use(courses)
-//     .use(article)
-// )
 
 export default App

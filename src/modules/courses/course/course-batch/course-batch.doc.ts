@@ -90,13 +90,13 @@ const SimpleSuccessResponse = (msg: string) => ({
 })
 
 // 3. Complete Route Documentation Objects
-const CourseBatchTags = ['Courses']
+const CourseBatchTags = ['Courses - Batch']
 
 export const AddCourseBatchDoc = {
   body: CourseBatchModel,
   detail: {
     tags: CourseBatchTags,
-    summary: '[course-batch] Create a New Batch for Course',
+    summary: 'Create a New Batch for Course',
     responses: {
       201: CreatedCourseBatchResponse,
     },
@@ -107,7 +107,7 @@ export const UploadCourseBatchPosterDoc = {
   body: CourseBatchPosterUploadModel,
   detail: {
     tags: CourseBatchTags,
-    summary: '[course-batch] Upload Poster for Batch of Course',
+    summary: 'Upload Poster for Batch of Course',
     responses: {
       200: {
         description: 'Poster uploaded',
@@ -128,7 +128,7 @@ export const GetCourseBatchByIdDoc = {
   params: ParamsCourseBatchModel,
   detail: {
     tags: CourseBatchTags,
-    summary: '[course-batch] Get Course Batch by Course Id and Batch Id',
+    summary: 'Get Course Batch by Course Id and Batch Id',
     responses: {
       200: GetCourseBatchByIdResponse,
     },
@@ -140,7 +140,7 @@ export const UpdateCourseBatchDoc = {
   params: ParamsCourseBatchModel,
   detail: {
     tags: CourseBatchTags,
-    summary: '[course-batch] Update Batch in Course by Batch Id',
+    summary: 'Update Batch in Course by Batch Id',
     responses: {
       200: SimpleSuccessResponse('Updated'),
     },
@@ -151,7 +151,7 @@ export const DeleteCourseBatchDoc = {
   params: ParamsCourseBatchModel,
   detail: {
     tags: CourseBatchTags,
-    summary: '[course-batch] Delete Batch in Course by Batch Id',
+    summary: 'Delete Batch in Course by Batch Id',
     responses: {
       200: SimpleSuccessResponse('Deleted'),
     },

@@ -1,3 +1,4 @@
+import { BadRequest } from '../../../exceptions/client.error'
 import { ApiResponse } from '../../../types/response.type'
 import { ResponseHelper } from '../../../utils/responseHelper'
 import { CourseFieldParams, CourseFieldRequest } from './courses-field.model'
@@ -33,6 +34,14 @@ export class CourseFieldController {
   static async deleteCourseFieldController(
     params: CourseFieldParams
   ): Promise<ApiResponse> {
+    const isAssigned = await CourseFieldService.checkCourseFieldAssigned(
+      params.courseFieldId
+    )
+    if (isAssigned) {
+      throw new BadRequest(
+        'Course field tidak dapat dihapus karena sudah digunakan pada courses'
+      )
+    }
     await CourseFieldService.deleteCourseFieldById(params.courseFieldId)
 
     return ResponseHelper.success('Menghapus course field berhasil')

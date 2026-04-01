@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../utils/doc-builder'
 import { MitraModel, ParamsMitraModel, QueryMitraModel } from './mitra.model'
 
 // 1. Data Structure for Documentation
@@ -14,100 +14,57 @@ const MitraDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllMitraResponse = {
-  description: 'Berhasil mengambil semua data mitra',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(MitraDataSchema)),
-    },
-  },
-}
+export const GetAllMitraResponse = successDoc(
+  t.Array(MitraDataSchema),
+  'Berhasil mengambil semua data mitra'
+)
 
-export const GetMitraByIdResponse = {
-  description: 'Berhasil mengambil detail mitra',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(MitraDataSchema),
-    },
-  },
-}
+export const GetMitraByIdResponse = successDoc(
+  MitraDataSchema,
+  'Berhasil mengambil detail mitra'
+)
 
-export const CreatedMitraResponse = {
-  description: 'Berhasil menambah mitra baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ mitra_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedMitraResponse = successDoc(
+  t.Object({ mitra_id: t.String() }),
+  'Berhasil menambah mitra baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
 const MitraTags = ['Mitra']
 
 export const AddMitraDoc = {
   body: MitraModel,
-  detail: {
-    tags: MitraTags,
-    summary: 'Create a New Mitra',
-    responses: {
-      201: CreatedMitraResponse,
-    },
-  },
+  ...docs('Create a New Mitra', MitraTags, {
+    201: CreatedMitraResponse,
+  }),
 }
 
 export const GetAllMitraDoc = {
   query: QueryMitraModel,
-  detail: {
-    tags: MitraTags,
-    summary: 'Get All Mitra',
-    responses: {
-      200: GetAllMitraResponse,
-    },
-  },
+  ...docs('Get All Mitra', MitraTags, {
+    200: GetAllMitraResponse,
+  }),
 }
 
 export const GetMitraByIdDoc = {
   params: ParamsMitraModel,
-  detail: {
-    tags: MitraTags,
-    summary: 'Get Mitra by Id',
-    responses: {
-      200: GetMitraByIdResponse,
-    },
-  },
+  ...docs('Get Mitra by Id', MitraTags, {
+    200: GetMitraByIdResponse,
+  }),
 }
 
 export const UpdateMitraDoc = {
   body: t.Partial(MitraModel),
   params: ParamsMitraModel,
-  detail: {
-    tags: MitraTags,
-    summary: 'Update Mitra by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Mitra by Id', MitraTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteMitraDoc = {
   params: ParamsMitraModel,
-  detail: {
-    tags: MitraTags,
-    summary: 'Delete Mitra by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Mitra by Id', MitraTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }
