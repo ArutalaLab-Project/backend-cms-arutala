@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../utils/doc-builder'
 import {
   ContributorModel,
   ContributorType,
@@ -33,100 +33,57 @@ const ContributorDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllContributorResponse = {
-  description: 'Berhasil mengambil semua data contributor',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(ContributorDataSchema)),
-    },
-  },
-}
+export const GetAllContributorResponse = successDoc(
+  t.Array(ContributorDataSchema),
+  'Berhasil mengambil semua data contributor'
+)
 
-export const GetContributorByIdResponse = {
-  description: 'Berhasil mengambil detail contributor',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(ContributorDataSchema),
-    },
-  },
-}
+export const GetContributorByIdResponse = successDoc(
+  ContributorDataSchema,
+  'Berhasil mengambil detail contributor'
+)
 
-export const CreatedContributorResponse = {
-  description: 'Berhasil menambah contributor baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ contributor_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedContributorResponse = successDoc(
+  t.Object({ contributor_id: t.String() }),
+  'Berhasil menambah contributor baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
 const ContributorTags = ['Contributor']
 
 export const AddContributorDoc = {
   body: ContributorModel,
-  detail: {
-    tags: ContributorTags,
-    summary: 'Create a New Contributor',
-    responses: {
-      201: CreatedContributorResponse,
-    },
-  },
+  ...docs('Create a New Contributor', ContributorTags, {
+    201: CreatedContributorResponse,
+  }),
 }
 
 export const GetAllContributorDoc = {
   query: QueryContributorTypeModel,
-  detail: {
-    tags: ContributorTags,
-    summary: 'Get All Contributors',
-    responses: {
-      200: GetAllContributorResponse,
-    },
-  },
+  ...docs('Get All Contributors', ContributorTags, {
+    200: GetAllContributorResponse,
+  }),
 }
 
 export const GetContributorByIdDoc = {
   params: ParamsContributorModel,
-  detail: {
-    tags: ContributorTags,
-    summary: 'Get Contributor by Id',
-    responses: {
-      200: GetContributorByIdResponse,
-    },
-  },
+  ...docs('Get Contributor by Id', ContributorTags, {
+    200: GetContributorByIdResponse,
+  }),
 }
 
 export const UpdateContributorDoc = {
   body: t.Partial(ContributorModel),
   params: ParamsContributorModel,
-  detail: {
-    tags: ContributorTags,
-    summary: 'Update Contributor by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Contributor by Id', ContributorTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteContributorDoc = {
   params: ParamsContributorModel,
-  detail: {
-    tags: ContributorTags,
-    summary: 'Delete Contributor by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Contributor by Id', ContributorTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }

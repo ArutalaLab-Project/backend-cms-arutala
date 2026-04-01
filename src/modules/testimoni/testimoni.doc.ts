@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../utils/doc-builder'
 import {
   ParamsTestimoniModel,
   QueryTestimoniModel,
@@ -29,100 +29,57 @@ const TestimoniDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllTestimoniResponse = {
-  description: 'Berhasil mengambil semua data testimoni',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(TestimoniDataSchema)),
-    },
-  },
-}
+export const GetAllTestimoniResponse = successDoc(
+  t.Array(TestimoniDataSchema),
+  'Berhasil mengambil semua data testimoni'
+)
 
-export const GetTestimoniByIdResponse = {
-  description: 'Berhasil mengambil detail testimoni',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(TestimoniDataSchema),
-    },
-  },
-}
+export const GetTestimoniByIdResponse = successDoc(
+  TestimoniDataSchema,
+  'Berhasil mengambil detail testimoni'
+)
 
-export const CreatedTestimoniResponse = {
-  description: 'Berhasil menambah testimoni baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ testimoni_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedTestimoniResponse = successDoc(
+  t.Object({ testimoni_id: t.String() }),
+  'Berhasil menambah testimoni baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
 const TestimoniTags = ['Testimoni']
 
 export const AddTestimoniDoc = {
   body: TestimoniModel,
-  detail: {
-    tags: TestimoniTags,
-    summary: 'Create a New Testimoni',
-    responses: {
-      201: CreatedTestimoniResponse,
-    },
-  },
+  ...docs('Create a New Testimoni', TestimoniTags, {
+    201: CreatedTestimoniResponse,
+  }),
 }
 
 export const GetAllTestimoniDoc = {
   query: QueryTestimoniModel,
-  detail: {
-    tags: TestimoniTags,
-    summary: 'Get All Testimoni with Query Parameter',
-    responses: {
-      200: GetAllTestimoniResponse,
-    },
-  },
+  ...docs('Get All Testimoni with Query Parameter', TestimoniTags, {
+    200: GetAllTestimoniResponse,
+  }),
 }
 
 export const GetTestimoniByIdDoc = {
   params: ParamsTestimoniModel,
-  detail: {
-    tags: TestimoniTags,
-    summary: 'Get Testimoni by Id',
-    responses: {
-      200: GetTestimoniByIdResponse,
-    },
-  },
+  ...docs('Get Testimoni by Id', TestimoniTags, {
+    200: GetTestimoniByIdResponse,
+  }),
 }
 
 export const UpdateTestimoniDoc = {
   body: t.Partial(TestimoniModel),
   params: ParamsTestimoniModel,
-  detail: {
-    tags: TestimoniTags,
-    summary: 'Update Testimoni by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Testimoni by Id', TestimoniTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteTestimoniDoc = {
   params: ParamsTestimoniModel,
-  detail: {
-    tags: TestimoniTags,
-    summary: 'Delete Testimoni by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Testimoni by Id', TestimoniTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }

@@ -50,6 +50,14 @@ export class CourseFieldService {
     return mapToResponse(rows[0])
   }
 
+  static async checkCourseFieldAssigned(courseFieldId: string) {
+    const { rows } = await supabasePool.query(
+      `SELECT * FROM courses WHERE field_id = $1`,
+      [courseFieldId]
+    )
+    return rows.length > 0
+  }
+
   static async deleteCourseFieldById(courseFieldId: string) {
     const { rows } = await supabasePool.query(
       `DELETE FROM course_fields WHERE course_field_id = $1 RETURNING *`,

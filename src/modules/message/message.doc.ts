@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../utils/doc-builder'
 import {
   MessageModel,
   MessageStatus,
@@ -28,99 +28,56 @@ const MessageDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllMessageResponse = {
-  description: 'Berhasil mengambil semua data message',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(MessageDataSchema)),
-    },
-  },
-}
+export const GetAllMessageResponse = successDoc(
+  t.Array(MessageDataSchema),
+  'Berhasil mengambil semua data message'
+)
 
-export const GetMessageByIdResponse = {
-  description: 'Berhasil mengambil detail message',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(MessageDataSchema),
-    },
-  },
-}
+export const GetMessageByIdResponse = successDoc(
+  MessageDataSchema,
+  'Berhasil mengambil detail message'
+)
 
-export const CreatedMessageResponse = {
-  description: 'Berhasil menambah message baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ message_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedMessageResponse = successDoc(
+  t.Object({ message_id: t.String() }),
+  'Berhasil menambah message baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
 const MessageTags = ['Message']
 
 export const AddMessageDoc = {
   body: MessageModel,
-  detail: {
-    tags: MessageTags,
-    summary: 'Create a New Message',
-    responses: {
-      201: CreatedMessageResponse,
-    },
-  },
+  ...docs('Create a New Message', MessageTags, {
+    201: CreatedMessageResponse,
+  }),
 }
 
 export const GetAllMessageDoc = {
-  detail: {
-    tags: MessageTags,
-    summary: 'Get All Message',
-    responses: {
-      200: GetAllMessageResponse,
-    },
-  },
+  ...docs('Get All Message', MessageTags, {
+    200: GetAllMessageResponse,
+  }),
 }
 
 export const GetMessageByIdDoc = {
   params: ParamsMessageModel,
-  detail: {
-    tags: MessageTags,
-    summary: 'Get Message by Id',
-    responses: {
-      200: GetMessageByIdResponse,
-    },
-  },
+  ...docs('Get Message by Id', MessageTags, {
+    200: GetMessageByIdResponse,
+  }),
 }
 
 export const UpdateMessageDoc = {
   body: MessageUpdateModel,
   params: ParamsMessageModel,
-  detail: {
-    tags: MessageTags,
-    summary: 'Update Message by Id',
-    responses: {
-      200: SimpleSuccessResponse('Updated'),
-    },
-  },
+  ...docs('Update Message by Id', MessageTags, {
+    200: simpleSuccessDoc('Updated'),
+  }),
 }
 
 export const DeleteMessageDoc = {
   params: ParamsMessageModel,
-  detail: {
-    tags: MessageTags,
-    summary: 'Delete Message by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Message by Id', MessageTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }

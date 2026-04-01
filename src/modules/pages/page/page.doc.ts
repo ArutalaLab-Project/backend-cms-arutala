@@ -1,5 +1,5 @@
 import { t } from 'elysia'
-import { createResponseSchema } from '../../../utils/schemaHelper'
+import { docs, successDoc, simpleSuccessDoc } from '../../../utils/doc-builder'
 import { PageModel, ParamsPageModel, ParamsSlugPathModel } from './page.model'
 
 // 1. Data Structure for Documentation
@@ -13,121 +13,72 @@ const PageDataSchema = t.Object({
 })
 
 // 2. Response Schemas
-export const GetAllPageResponse = {
-  description: 'Berhasil mengambil semua data pages',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Array(PageDataSchema)),
-    },
-  },
-}
+export const GetAllPageResponse = successDoc(
+  t.Array(PageDataSchema),
+  'Berhasil mengambil semua data pages'
+)
 
-export const GetPageByIdResponse = {
-  description: 'Berhasil mengambil detail page',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({
-          page_id: t.String({ format: 'uuid' }),
-          page_title: t.String(),
-          page_slug: t.String(),
-        })
-      ),
-    },
-  },
-}
+export const GetPageByIdResponse = successDoc(
+  t.Object({
+    page_id: t.String({ format: 'uuid' }),
+    page_title: t.String(),
+    page_slug: t.String(),
+  }),
+  'Berhasil mengambil detail page'
+)
 
-export const getPageWithSeoActiveResponse = {
-  description: 'Berhasil mengambil Seo active pada page ini',
-  content: { 'application/json': {} },
-}
+export const getPageWithSeoActiveResponse = successDoc(
+  t.Object({}),
+  'Berhasil mengambil Seo active pada page ini'
+)
 
-export const CreatedPageResponse = {
-  description: 'Berhasil menambah pages baru',
-  content: {
-    'application/json': {
-      schema: createResponseSchema(
-        t.Object({ page_id: t.String() }),
-        'Created'
-      ),
-    },
-  },
-}
-
-const SimpleSuccessResponse = (msg: string) => ({
-  description: msg,
-  content: {
-    'application/json': {
-      schema: createResponseSchema(t.Null(), msg),
-    },
-  },
-})
+export const CreatedPageResponse = successDoc(
+  t.Object({ page_id: t.String() }),
+  'Berhasil menambah pages baru',
+  'Created'
+)
 
 // 3. Complete Route Documentation Objects
-const PageTags = ['Pages']
+const PageTags = ['Pages - Master']
 
 export const getPageWithSeoActive = {
   params: ParamsSlugPathModel,
-  detail: {
-    tags: PageTags,
-    summary: 'Get Page With Seo Active',
-    responses: {
-      200: getPageWithSeoActiveResponse,
-    },
-  },
+  ...docs('Get Page With Seo Active', PageTags, {
+    200: getPageWithSeoActiveResponse,
+  }),
 }
 
 export const AddPageDoc = {
   body: PageModel,
-  detail: {
-    tags: PageTags,
-    summary: 'Create a New Pages',
-    responses: {
-      201: CreatedPageResponse,
-    },
-  },
+  ...docs('Create a New Pages', PageTags, {
+    201: CreatedPageResponse,
+  }),
 }
 
 export const GetAllPageDoc = {
-  detail: {
-    tags: PageTags,
-    summary: 'Get All Pages',
-    responses: {
-      200: GetAllPageResponse,
-    },
-  },
+  ...docs('Get All Pages', PageTags, {
+    200: GetAllPageResponse,
+  }),
 }
 
 export const GetPageByIdDoc = {
   params: ParamsPageModel,
-  detail: {
-    tags: PageTags,
-    summary: 'Get Page by Id',
-    responses: {
-      200: GetPageByIdResponse,
-    },
-  },
+  ...docs('Get Page by Id', PageTags, {
+    200: GetPageByIdResponse,
+  }),
 }
 
 export const UpdatePageDoc = {
   body: PageModel,
   params: ParamsPageModel,
-  detail: {
-    tags: PageTags,
-    summary: 'Update Page by Id',
-    responses: {
-      200: GetPageByIdResponse,
-    },
-  },
+  ...docs('Update Page by Id', PageTags, {
+    200: GetPageByIdResponse,
+  }),
 }
 
 export const DeletePageDoc = {
   params: ParamsPageModel,
-  detail: {
-    tags: PageTags,
-    summary: 'Delete Page by Id',
-    responses: {
-      200: SimpleSuccessResponse('Deleted'),
-    },
-  },
+  ...docs('Delete Page by Id', PageTags, {
+    200: simpleSuccessDoc('Deleted'),
+  }),
 }
