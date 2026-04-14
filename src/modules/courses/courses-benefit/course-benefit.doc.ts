@@ -1,12 +1,8 @@
-import { t } from 'elysia'
-import { docs, successDoc } from '../../../utils/doc-builder'
+import { createCrudDocs } from '../../../utils/doc-builder'
+import { CourseBenefitResponseSchema } from './course-benefit.model'
 
-const CourseBenefitTags = ['Courses - Benefit']
-
-export const GetAllCourseBenefitDoc = docs(
-  'Get All Course Benefit',
-  CourseBenefitTags,
-  {
-    200: successDoc(t.Array(t.Any()), 'Berhasil mengambil data course benefit'),
-  }
-)
+export const CourseBenefitDocs = createCrudDocs({
+  resourceName: 'Course Benefit',
+  tag: 'Courses - Benefit',
+  dataSchema: CourseBenefitResponseSchema,
+})
