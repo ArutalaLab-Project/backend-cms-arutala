@@ -63,7 +63,8 @@ export class ArticleService {
         a.article_cover_url, a.article_cover_description,
         a.article_status, a.created_date, u.full_name as author
       FROM articles a JOIN users u ON a.created_by = u.user_id
-      WHERE ${conditions.join(' AND ')}`,
+      WHERE ${conditions.join(' AND ')}
+      ORDER BY a.created_date DESC`,
       values
     )
     return rows
